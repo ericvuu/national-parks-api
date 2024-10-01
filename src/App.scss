@@ -1,0 +1,13 @@
+@import "./Variables.scss";
+@import "./styles/navbar.scss";
+@import "./styles/home-banner.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $secondary;
+}

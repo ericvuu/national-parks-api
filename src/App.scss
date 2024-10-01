@@ -3,6 +3,7 @@
 @import "./styles/home-banner.scss";
 @import "./styles/footer.scss";
 @import "./styles/about.scss";
+@import "./styles/adventure.scss";
 
 * {
   margin: 0;
@@ -17,6 +18,11 @@ body {
 
 .page {
   min-height: 60vh;
+}
+
+.section-title {
+  font-size: 3rem;
+  margin-bottom: 3rem;
 }
 
 .container {

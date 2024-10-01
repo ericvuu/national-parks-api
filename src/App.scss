@@ -2,6 +2,7 @@
 @import "./styles/navbar.scss";
 @import "./styles/home-banner.scss";
 @import "./styles/footer.scss";
+@import "./styles/about.scss";
 
 * {
   margin: 0;
@@ -11,4 +12,39 @@
 
 body {
   background-color: $secondary;
+}
+
+.container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.container-fluid {
+  width: 100%;
+  padding: 0 15px;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1600px;
+  }
 }

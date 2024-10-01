@@ -1,0 +1,68 @@
+.about-page {
+  color: $secondary;
+
+  .about-banner {
+    position: relative;
+    height: 60vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    background-image: url("/src/assets/images/about-banner.jpg");
+    z-index: 1;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: -1;
+    }
+
+   .banner-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+     h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      color: #fff;
+    }
+
+    p {
+      font-size: 1.5rem;
+      max-width: 600px;
+      margin-top: 1rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+      color: #fff;
+    }
+   }
+  }
+
+  .about-info {
+    padding: 2rem 5rem;
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: $dk-accent;
+    }
+
+    p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: $dk-accent;
+    }
+  }
+}

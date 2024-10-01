@@ -6,6 +6,7 @@
 @import "./styles/adventure.scss";
 @import "./styles/form.scss";
 @import "./styles/home-form.scss";
+@import "./styles/explore.scss";
 
 * {
   margin: 0;
@@ -59,5 +60,11 @@ body {
 @media (min-width: 1200px) {
   .container {
     max-width: 1600px;
+  }
+}
+
+@media (max-width: 1600px) {
+  .container {
+    max-width: 1200px;
   }
 }

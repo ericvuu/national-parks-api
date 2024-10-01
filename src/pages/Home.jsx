@@ -7,7 +7,7 @@ const Home = ( { city, country, state, stateCode }) => {
   return (
     <>
       <HomeBanner city={city} country={country} state={state} stateCode={stateCode} />
-      <div className="container">
+      <div className="container-fluid">
         <Adventure/>
         <HomeForm/>
       </div>

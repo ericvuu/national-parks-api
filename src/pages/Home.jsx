@@ -1,6 +1,7 @@
 import { useState } from "react";
 import HomeBanner from "../components/HomeBanner";
 import Adventure from "../components/Adventure";
+import HomeForm from "../components/HomeForm";
 
 const Home = ( { city, country, state, stateCode }) => {
   return (
@@ -8,6 +9,7 @@ const Home = ( { city, country, state, stateCode }) => {
       <HomeBanner city={city} country={country} state={state} stateCode={stateCode} />
       <div className="container">
         <Adventure/>
+        <HomeForm/>
       </div>
     </>
   );

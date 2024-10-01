@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import useGeoLocation from "./hooks/useGeoLocation";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Explore from "./pages/Explore";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/explore" element={<Explore />} />
       </Routes>
+      <Footer/>
     </Router>
   );
 }

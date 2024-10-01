@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import yosemiteImage from "../assets/images/banners/yosemite.jpg";
 import canyonlandsImage from "../assets/images/banners/canyonlands.jpg";
 import westglacierImage from "../assets/images/banners/west-glacier.jpg";
+import notFoundImage from "../assets/images/banners/not-found.jpg";
 
 import useGetParks from "../hooks/useGetParks";
 
@@ -30,7 +31,7 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
           const newParks = shuffledParks.slice(0, 3).map((park) => ({
             id: park.parkCode,
             name: park.fullName,
-            image: park.images && park.images[0] ? park.images[0].url : "placeholder.jpg",
+            image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
             url: park.url,
           }
         ));

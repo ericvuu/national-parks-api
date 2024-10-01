@@ -1,0 +1,80 @@
+.np-footer {
+  background-color: $black;
+  color: #fff;
+  padding: 3rem 0;
+  background-image: url("/src/assets/images/footer-background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: 1.2rem;
+
+  .container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .column {
+    padding: 10px;
+  }
+
+  .logo-column {
+    flex: 0 0 16.66%;
+    margin-left: 8.33%;
+
+    p {
+      margin: 0;
+
+      .np-logo {
+        width: 100px;
+        display: block;
+        margin-bottom: 10px;
+      }
+    }
+  }
+
+  .made-possible-column {
+    flex: 0 0 16.66%;
+    p {
+      margin: 0;
+
+      a {
+        color: #fff;
+        text-decoration: underline;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  .info-column {
+    flex: 0 0 50%;
+
+    p {
+      margin: 0;
+
+      a {
+        color: #fff;
+        text-decoration: underline;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+  }
+}

@@ -2,52 +2,28 @@ import React from "react";
 
 const About = () => {
   return (
-    <div className="about-page">
-      <div className="about-banner">
-        <div className="banner-content">
-          <h1>About the National Park Service</h1>
-          <p>
-            Welcome to National Parks, your ultimate guide to exploring
-            America's most beautiful natural treasures. We believe in the power
-            of nature to inspire and connect us all.
-          </p>
-        </div>
-      </div>
+    <div className="about-page page">
       <div className="container">
         <div className="about-info">
-          <h2>Who They Are</h2>
+          <h1>About the National Park Service</h1>
           <p>
-            The National Park Service (NPS) is a federal agency within the
-            United States Department of the Interior. Their mission is to
-            preserve the ecological and historical integrity of the parks while
-            providing for the enjoyment of the public.
+            The National Park Service (NPS) is an agency of the United States
+            federal government, within the US Department of the Interior. The
+            service manages all national parks; most national monuments; and
+            other natural, historical, and recreational properties, with various
+            title designations. The United States Congress created the agency on
+            August 25, 1916, through the National Park Service Organic Act.
+            Its headquarters is in Washington, D.C., within the main
+            headquarters of the Department of the Interior.
           </p>
-
-          <h2>Their Mission</h2>
           <p>
-            The NPS is dedicated to protecting the natural and cultural
-            resources of the United States for the enjoyment, education, and
-            inspiration of current and future generations. They manage more than
-            400 sites, including national parks, monuments, and historical
-            sites.
-          </p>
-
-          <h2>What They Do</h2>
-          <p>
-            The NPS works in partnership with communities across the country to
-            enhance their quality of life and connect people to the stories and
-            experiences that shape the nation. They offer a range of programs,
-            services, and volunteer opportunities to promote conservation and
-            stewardship.
-          </p>
-
-          <h2>Join Them</h2>
-          <p>
-            The National Park Service invites everyone to explore the national
-            parks, engage with the natural world, and participate in the mission
-            to protect and preserve these unique landscapes. Together, they can
-            ensure that future generations will also enjoy the wonder of
-            America's great outdoors.
+            The NPS employs about 20,000 people in 431 units covering over 85
+            million acres (0.34 million km2) in all 50 states, the District of
+            Columbia, and US territories. In 2019, the service had more
+            than 279,000 volunteers.The agency is charged with preserving
+            the ecological and historical integrity of the places entrusted to
+            its management and with making them available for public use and
+            enjoyment.
           </p>
         </div>
       </div>

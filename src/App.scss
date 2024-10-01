@@ -11,7 +11,12 @@
 }
 
 body {
-  background-color: $secondary;
+  background-color: $black;
+  color: #ffffff;
+}
+
+.page {
+  min-height: 60vh;
 }
 
 .container {

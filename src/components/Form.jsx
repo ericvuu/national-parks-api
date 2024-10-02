@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import searchIcon from "../assets/search-icon.svg";
 
 const Form = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState("");
   const [search, setSearch] = useState("");
 
@@ -13,8 +15,9 @@ const Form = () => {
     setSearch(e.target.value);
   };
 
-  const handleSearchClick = () => {
-    console.log(`Searching for: ${search} in state: ${state}`);
+  const handleSearchClick = (e) => {
+    e.preventDefault();
+    navigate(`/explore?${state ? `&stateCode=${state}` : ''}${search ? `&q=${search}` : ''}`);
   };
 
   return (

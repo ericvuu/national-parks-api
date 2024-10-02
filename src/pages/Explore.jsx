@@ -9,20 +9,21 @@ const useQuery = () => {
 };
 
 
-const Explore = ({ stateCode, searchTerm }) => {
+const Explore = () => {
   const [parks, setParks] = useState(null);
-  const { parkData, error, loading } = useGetParks(stateCode, searchTerm);
   const query = useQuery();
   const activity = query.get("activity");
+  const stateCode = query.get("stateCode");
+  const searchTerm = query.get("q");
   const formattedActivity = activity ? activity.replace(/-/g, " ") : null;
+  const { parkData, error, loading } = useGetParks(stateCode, searchTerm);
 
   useEffect(() => {
     if (parkData) {
       setParks(parkData);
+      console.log(parkData)
     }
   }, [parkData]);
-
-  console.log(parkData);
 
   return (
     <div className="explore-page page">

@@ -31,7 +31,7 @@
       align-items: center;
       flex-direction: column;
       .banner-heading {
-         font-size: 5rem;
+        font-size: 5rem;
         font-weight: 700;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
         color: #fff;
@@ -66,5 +66,13 @@
   .content-container {
     padding: 2rem 0;
     color: #ffffff;
+
+    .gallery {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
   }
 }

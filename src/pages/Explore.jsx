@@ -14,14 +14,14 @@ const useQuery = () => {
 const Explore = () => {
   const [parks, setParks] = useState([]);
   const query = useQuery();
-  const activity = query.get("activity");
-  const stateCode = query.get("stateCode");
-  const searchTerm = query.get("q");
-  const formattedActivity = activity ? activity.replace(/-/g, " ") : null;
-  const { parkData, error, loading } = useGetParks(stateCode, searchTerm);
+  const qActivity = query.get("activity");
+  const qStateCode = query.get("stateCode");
+  const qSearchTerm = query.get("q");
+  const formattedActivity = qActivity ? qActivity.replace(/-/g, " ") : null;
+  const { parkData, error, loading } = useGetParks(qStateCode, qSearchTerm);
 
   useEffect(() => {
-    if (parkData && parkData.data) {
+    if (parkData && parkData.data && qActivity == null) {
       let fetchedParks = parkData.data;
 
       const allParks = fetchedParks.map((park) => ({
@@ -30,10 +30,28 @@ const Explore = () => {
           image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
           url: park.url,
       }))
+      setParks(allParks);
+    } else if (parkData && parkData.data && qActivity){
+      let fetchedParks = parkData.data;
+      let filteredParks = [];
 
-
-    setParks(allParks);
-    console.log(parkData);
+      fetchedParks.forEach((park) => {
+        let activities = park.activities;
+        if(activities.length){
+          activities.forEach((activity) => {
+            let activityLC = activity.name.toLowerCase();
+            if (activityLC == formattedActivity){
+              filteredParks.push({
+                name: park.fullName,
+                parkCode: park.parkCode,
+                image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+                url: park.url,
+              })
+            }
+          })
+        }
+      });
+      setParks(filteredParks);
     }
   }, [parkData]);
 
@@ -68,7 +86,7 @@ const Explore = () => {
               ))}
             </div>
           ) : (
-            <p>No parks available.</p>
+            <p className="no-parks">No parks available.</p>
           )}
         </div>
     </div>

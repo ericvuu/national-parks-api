@@ -43,20 +43,24 @@ const Explore = () => {
       let filteredParks = [];
       fetchedParks.forEach((park) => {
         const activities = park.activities;
+        let parkAdded = false;
         if (activities.length) {
           activities.forEach((activity) => {
             const activityLC = activity.name.toLowerCase();
-            if (activityLC === formattedActivity) {
-              filteredParks.push({
-                name: park.fullName,
-                parkCode: park.parkCode,
-                image:
-                  park.images && park.images[0]
-                    ? park.images[0].url
-                    : notFoundImage,
-                url: park.url,
-              });
-            }
+           if (activityLC.includes(formattedActivity)) {
+             if (!parkAdded) {
+               filteredParks.push({
+                 name: park.fullName,
+                 parkCode: park.parkCode,
+                 image:
+                   park.images && park.images[0]
+                     ? park.images[0].url
+                     : notFoundImage,
+                 url: park.url,
+               });
+               parkAdded = true;
+             }
+           }
           });
         }
       });

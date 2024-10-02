@@ -5,7 +5,9 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Explore from "./pages/Explore";
+import Park from "./pages/Park";
 import "./App.scss";
+
 
 function App() {
   const { city, country, region, regionCode } = useGeoLocation();
@@ -21,6 +23,7 @@ function App() {
         />
         <Route path="/about" element={<About />} />
         <Route path="/explore" element={<Explore />} />
+        <Route path="/park" element={<Park />} />
       </Routes>
       <Footer/>
     </Router>

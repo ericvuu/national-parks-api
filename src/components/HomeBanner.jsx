@@ -54,7 +54,9 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
             <div className="banner-left">
               <p className="banner-subheading">Embrace the beauty</p>
               <h1 className="banner-heading">
-                {state && country == "United States" ? `Explore the National Parks in ${state}`: "Explore America's National Parks"}
+                {state && country == "United States"
+                  ? `Explore the National Parks in ${state}`
+                  : "Explore America's National Parks"}
               </h1>
               <Link to="/explore" className="btn btn-lg np-explore-btn">
                 Explore Parks
@@ -62,7 +64,8 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
             </div>
             <div className="banner-right">
               {parks.map((park, index) => (
-                <button
+                <Link
+                  to={`/park?pCode=${park.id}`}
                   key={index}
                   className={`park-image park-image-${index + 1}`}
                   onClick={() => viewPark(park)}
@@ -70,7 +73,7 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
                 >
                   <img src={park.image} alt={`${park.name} National Park`} />
                   <div className="park-name">{park.name}</div>
-                </button>
+                </Link>
               ))}
             </div>
           </div>

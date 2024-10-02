@@ -82,3 +82,36 @@
     text-align: center;
   }
 }
+
+ .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+
+    .prev, .next {
+      background-color: transparent;
+      border: none;
+      color: $primary;
+      margin: 0 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        color: $accent;
+      }
+
+      &:disabled {
+        color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+
+    span {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #ffffff;
+    }
+  }

@@ -54,7 +54,7 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
             <div className="banner-left">
               <p className="banner-subheading">Embrace the beauty</p>
               <h1 className="banner-heading">
-                {state && country == "United States" ? `Explore the National Parks in ${state}`: city && country ? `Explore Parks near ${city}, ${country}`: "Explore America's National Parks"}
+                {state && country == "United States" ? `Explore the National Parks in ${state}`: "Explore America's National Parks"}
               </h1>
               <Link to="/explore" className="btn btn-lg np-explore-btn">
                 Explore Parks

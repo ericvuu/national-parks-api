@@ -1,7 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Form from "../components/Form";
 
-const Explore = () => {
+import useGetParks from "../hooks/useGetParks";
+
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
+
+const Explore = ({ stateCode, searchTerm }) => {
+  const [parks, setParks] = useState(null);
+  const { parkData, error, loading } = useGetParks(stateCode, searchTerm);
+  const query = useQuery();
+  const activity = query.get("activity");
+  const formattedActivity = activity ? activity.replace(/-/g, " ") : null;
+
+  useEffect(() => {
+    if (parkData) {
+      setParks(parkData);
+    }
+  }, [parkData]);
+
+  console.log(parkData);
+
   return (
     <div className="explore-page page">
       <div className="explore-banner">

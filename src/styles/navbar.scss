@@ -4,6 +4,7 @@
   align-items: center;
   padding: 1rem 2rem;
   background-color: $dk-accent;
+  position: relative;
 
   .navbar-brand {
     display: flex;
@@ -14,7 +15,7 @@
       width: 70px;
     }
 
-    p{
+    p {
       color: #ffffff;
       margin-left: 15px;
       font-size: 2.5rem;
@@ -23,9 +24,6 @@
 
   .navbar-toggler {
     display: none;
-    background: none;
-    border: none;
-    cursor: pointer;
 
     .navbar-toggler-icon {
       width: 30px;
@@ -50,6 +48,20 @@
 
       &::after {
         top: 8px;
+      }
+    }
+
+    &.open .navbar-toggler-icon {
+      background-color: transparent;
+
+      &::before {
+        top: 0;
+        transform: rotate(45deg);
+      }
+
+      &::after {
+        top: 0;
+        transform: rotate(-45deg);
       }
     }
   }
@@ -87,11 +99,16 @@
 
     .navbar-toggler {
       display: block;
-      margin-left: auto;
-
-      .navbar-toggler-icon {
-        background-color: white;
-      }
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      z-index: 10;
+      width: 50px;
+      height: 50px;
+      padding: 10px;
     }
 
     .navbar-collapse {
@@ -106,7 +123,6 @@
         border-radius: 5px;
         position: absolute;
         top: 6rem;
-        left: 0;
         z-index: 10;
         left: 50%;
         transform: translateX(-50%);

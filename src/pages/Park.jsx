@@ -18,10 +18,9 @@ const Park = () => {
   const [weather, setWeather] = useState("");
   const [directionsUrl, setDirectionsUrl] = useState("");
   const [cords, setCords] = useState([]);
-  const [addresses, setAddresses] = useState([]);
   const [emails, setEmails] = useState([]);
   const [phoneNumbers, setPhoneNumbers] = useState([]);
-  const [activities, setActivites] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [topics, setTopics] = useState([]);
   const [operatingHours, setOperatingHours] = useState([]);
   const [images, setImages] = useState([]);
@@ -38,10 +37,9 @@ const Park = () => {
       setDescription(fetchedPark.description);
       setDirectionsUrl(fetchedPark.directionsUrl);
       setWeather(fetchedPark.weatherInfo);
-      setAddresses(fetchedPark.addresses);
       setEmails(fetchedPark.contacts.emailAddresses);
       setPhoneNumbers(fetchedPark.contacts.phoneNumbers);
-      setActivites(fetchedPark.activities);
+      setActivities(fetchedPark.activities);
       setTopics(fetchedPark.topics);
       setOperatingHours(fetchedPark.operatingHours);
       setImages(fetchedPark.images.slice(1));

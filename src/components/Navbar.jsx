@@ -19,7 +19,7 @@ const Navbar = () => {
         aria-controls="navbarToggler"
         aria-expanded={isOpen}
         aria-label="Toggle navigation"
-        className="navbar-toggler"
+        className={`navbar-toggler ${isOpen ? "open" : ""}`}
         onClick={toggleNavbar}
         type="button"
       >

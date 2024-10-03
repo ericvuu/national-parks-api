@@ -311,7 +311,6 @@
         border-radius: 8px;
         box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.3);
 
-
         @media (max-width: 1200px) {
           max-height: 500px;
         }
@@ -347,6 +346,71 @@
 
       .content {
         line-height: 1.5;
+      }
+    }
+  }
+
+  .contact-section {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: $dk-accent;
+
+    .card-container {
+      position: relative;
+      width: 90%;
+      margin: auto;
+      border-radius: 8px;
+      padding: 8rem 5rem;
+      background-color: $primary;
+      background-size: cover;
+      background-position: center center;
+      background-image: url("/src/assets/images/park-contact.jpg");
+      z-index: 1;
+
+      @media (max-width: 720px) {
+        padding: 5rem 2rem;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: -1;
+      }
+
+      .text-content {
+        color: #ffffff;
+        text-align: left;
+        h4 {
+          font-size: 1.4rem;
+        }
+        a {
+          text-decoration: none;
+          color: #ffffff;
+        }
+        .left-block {
+          width: 50%;
+          .email-info {
+            text-align: left;
+          }
+          .email-block {
+            padding-bottom: 1rem;
+          }
+        }
+
+        .email-info:not(:last-child),
+        .phone-info:not(:last-child) {
+          padding-bottom: 5px;
+        }
+
+
+        .right-block {
+          width: 50%;
+        }
       }
     }
   }

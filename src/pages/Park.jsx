@@ -19,7 +19,8 @@ const Park = () => {
   const [directionsUrl, setDirectionsUrl] = useState("");
   const [cords, setCords] = useState([]);
   const [addresses, setAddresses] = useState([]);
-  const [contacts, setContacts] = useState([]);
+  const [emails, setEmails] = useState([]);
+  const [phoneNumbers, setPhoneNumbers] = useState([]);
   const [activities, setActivites] = useState([]);
   const [topics, setTopics] = useState([]);
   const [operatingHours, setOperatingHours] = useState([]);
@@ -38,14 +39,13 @@ const Park = () => {
       setDirectionsUrl(fetchedPark.directionsUrl);
       setWeather(fetchedPark.weatherInfo);
       setAddresses(fetchedPark.addresses);
-      setContacts(fetchedPark.contacts);
+      setEmails(fetchedPark.contacts.emailAddresses);
+      setPhoneNumbers(fetchedPark.contacts.phoneNumbers);
       setActivites(fetchedPark.activities);
       setTopics(fetchedPark.topics);
       setOperatingHours(fetchedPark.operatingHours);
       setImages(fetchedPark.images.slice(1));
       setCords([fetchedPark.latitude, fetchedPark.longitude]);
-
-      console.log(fetchedPark)
     }
   }, [parkData]);
 
@@ -130,6 +130,40 @@ const Park = () => {
             ) : (
               ""
             )}
+          </div>
+        </div>
+        <div className="contact-section">
+          <h3>Contact</h3>
+          <div className="card-container">
+            <div className="text-content">
+              <div className="left-block">
+               <div className="email-block">
+                <h4>Email</h4>
+                 {emails
+                  ? emails.map((email, index) => (
+                      <div key={index} className="email-info">
+                        {email.description ? (
+                          <p className="email-description">{email.description}</p>
+                        ): ""}
+                        <p className="email"><a href={`mailto:${email.emailAddress}`}>{email.emailAddress}</a></p>
+                      </div>
+                    ))
+                  : ""}
+               </div>
+               <div className="phone-block">
+                <h4>Phone</h4>
+               </div>
+              </div>
+              <div className="right-block">
+                {phoneNumbers
+                  ? phoneNumbers.map((phone, index) => (
+                  <div key={index} className="phone-info">
+                    <p className="phone">{phone.type}: <a href={`tel:${phone.phoneNumber}`}> {`(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`} {phone.extension ? `ext: ${phone.extension}`: ""}</a></p>
+                  </div>
+                  ))
+                  : ""}
+              </div>
+            </div>
           </div>
         </div>
       </div>

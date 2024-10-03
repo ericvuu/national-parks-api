@@ -40,12 +40,6 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
       }
   }, [parkData]);
 
-
-  const viewPark = (park) => {
-    let parkCode = park.id;
-    console.log(parkCode)
-  };
-
   return (
     <>
       <div className="home-banner">
@@ -68,7 +62,6 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
                   to={`/park?pCode=${park.id}`}
                   key={index}
                   className={`park-image park-image-${index + 1}`}
-                  onClick={() => viewPark(park)}
                   id={park.id}
                 >
                   <img src={park.image} alt={`${park.name} National Park`} />

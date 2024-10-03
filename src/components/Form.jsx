@@ -20,6 +20,11 @@ const Form = () => {
     navigate(`/explore?${state ? `&stateCode=${state}` : ''}${search ? `&q=${search}` : ''}`);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearchClick(e);
+    }
+  };
   return (
     <div className="form-search">
       <div className="form-row">
@@ -28,6 +33,7 @@ const Form = () => {
             className="form-select-field"
             value={state}
             onChange={handleStateChange}
+            onKeyPress={handleKeyPress}
           >
             <option value="">Select State</option>
             <option value="AL">Alabama</option>
@@ -90,9 +96,10 @@ const Form = () => {
               type="text"
               value={search}
               onChange={handleSearchChange}
+              onKeyPress={handleKeyPress}
               placeholder="Enter search term"
             />
-            <button className="form-search-btn" onClick={handleSearchClick}>
+            <button className="form-search-btn" onClick={handleSearchClick} on>
               <img
                 src={searchIcon}
                 alt="Search Icon"

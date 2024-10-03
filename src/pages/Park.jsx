@@ -133,8 +133,8 @@ const Park = () => {
           </div>
         </div>
         <div className="contact-section">
-          <h3>Contact</h3>
           <div className="card-container">
+            <h3>Contact</h3>
             <div className="text-content">
               <div className="left-block">
                <div className="email-block">
@@ -152,15 +152,34 @@ const Park = () => {
                </div>
                <div className="phone-block">
                 <h4>Phone</h4>
-               </div>
-              </div>
-              <div className="right-block">
-                {phoneNumbers
+                 {phoneNumbers
                   ? phoneNumbers.map((phone, index) => (
                   <div key={index} className="phone-info">
                     <p className="phone">{phone.type}: <a href={`tel:${phone.phoneNumber}`}> {`(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`} {phone.extension ? `ext: ${phone.extension}`: ""}</a></p>
                   </div>
                   ))
+                  : ""}
+               </div>
+              </div>
+              <div className="right-block">
+                  {operatingHours
+                  ? operatingHours.map((park, index) => (
+                      <div key={index} className="park-info">
+                        <h4 className="park-name">{park.name}</h4>
+                         {park.description ? (
+                          <p className="park-description">{park.description}</p>
+                        ): ""}
+                        <div className="operating-hours">
+                          <div className="hours-row">
+                            {Object.entries(park.standardHours).map(([day, hours], dayIndex) => (
+                              <span key={dayIndex} className="hours-day">
+                                <span className="day">{`${day.charAt(0).toUpperCase() + day.slice(1)}`}</span>: {`${hours}`}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))
                   : ""}
               </div>
             </div>

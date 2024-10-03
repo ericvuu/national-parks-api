@@ -11,11 +11,7 @@
     }
 
     @media (max-width: 768px) {
-      font-size: 1.2rem;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 1rem;
+      font-size: 2rem;
     }
   }
 
@@ -190,10 +186,11 @@
           position: relative;
           min-height: 550px !important;
           box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.3);
-          border-radius: 8px;
+          border-radius: 8px 0 0 8px;
 
           @media (max-width: 1200px) {
             min-height: 380px !important;
+            border-radius: 8px;
           }
 
           @media (max-width: 768px) {
@@ -359,16 +356,21 @@
       position: relative;
       width: 90%;
       margin: auto;
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 8rem 5rem;
       background-color: $primary;
       background-size: cover;
       background-position: center center;
       background-image: url("/src/assets/images/park-contact.jpg");
       z-index: 1;
+      overflow: hidden;
 
-      @media (max-width: 720px) {
+      @media (max-width: 1080px) {
         padding: 5rem 2rem;
+      }
+
+      @media (max-width: 480px) {
+        padding: 4rem 1rem;
       }
 
       &::before {
@@ -378,38 +380,94 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.75);
+        background: rgba(0, 0, 0, 0.8);
         z-index: -1;
       }
 
+      h3 {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+      }
+
       .text-content {
+        display: flex;
+        flex-direction: row;
         color: #ffffff;
         text-align: left;
+
+        @media (max-width: 1080px) {
+          flex-direction: column;
+          align-items: center;
+        }
+
         h4 {
           font-size: 1.4rem;
+
+          @media (max-width: 1080px) {
+            font-size: 1.2rem;
+          }
         }
+
         a {
           text-decoration: none;
           color: #ffffff;
         }
+
         .left-block {
-          width: 50%;
-          .email-info {
-            text-align: left;
+          width: 35%;
+
+          @media (max-width: 1080px) {
+            width: 100%;
+            text-align: center;
           }
+
+          .email-info:not(:last-child),
+          .phone-info:not(:last-child) {
+            padding-bottom: 5px;
+          }
+
           .email-block {
             padding-bottom: 1rem;
           }
         }
 
-        .email-info:not(:last-child),
-        .phone-info:not(:last-child) {
-          padding-bottom: 5px;
-        }
-
-
         .right-block {
-          width: 50%;
+          width: 65%;
+
+          @media (max-width: 1080px) {
+            width: 100%;
+            margin-top: 2rem;
+          }
+
+          .park-name {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+
+            @media (max-width: 1080px) {
+              font-size: 1.2rem;
+            }
+          }
+
+          .park-description {
+            font-size: 1rem;
+            margin-bottom: 15px;
+
+            @media (max-width: 720px) {
+              font-size: 0.9rem;
+            }
+          }
+
+          .hours-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+          }
+
+          .hours-day {
+            .day {
+              font-weight: 700;
+            }
+          }
         }
       }
     }

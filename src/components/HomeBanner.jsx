@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import yosemiteImage from "../assets/images/banners/yosemite.jpg";
-import canyonlandsImage from "../assets/images/banners/canyonlands.jpg";
-import westglacierImage from "../assets/images/banners/west-glacier.jpg";
+import archesImage from "../assets/images/banners/arches.jpg";
+import glacierBayImage from "../assets/images/banners/glacier-bay.jpg";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
 
 import useGetParks from "../hooks/useGetParks";
 
 const HomeBanner = ({ city, country, state, stateCode }) => {
   const defaultParks = [
-     { name: "Yosemite", image: yosemiteImage, url: "" },
-     { name: "Canyonlands", image: canyonlandsImage, url: "" },
-     { name: "West Glacier", image: westglacierImage, url: "" },
-   ];
+    { name: "Yosemite", image: yosemiteImage, id: "yose" },
+    { name: "Arches National Park", image: archesImage, id: "arch" },
+    { name: "Glacier Bay National Park & Preserve", image: glacierBayImage, id: "glba" },
+  ];
 
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);

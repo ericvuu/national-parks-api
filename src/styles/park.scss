@@ -64,7 +64,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.6);
       z-index: -1;
     }
 
@@ -156,6 +156,10 @@
           justify-content: flex-end;
           align-items: center;
 
+          .coordinates {
+            margin-bottom: 5px;
+          }
+
           a {
             text-decoration: none;
             color: $primary;
@@ -185,7 +189,8 @@
         .leaflet-container {
           position: relative;
           min-height: 550px !important;
-          box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.8);
+          box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.3);
+          border-radius: 8px;
 
           @media (max-width: 1200px) {
             min-height: 380px !important;
@@ -230,6 +235,8 @@
         max-height: 600px;
         width: 100%;
         object-fit: cover;
+        box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
 
         @media (max-width: 1200px) {
           max-height: 500px;
@@ -301,6 +308,9 @@
         max-height: 600px;
         width: 100%;
         object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.3);
+
 
         @media (max-width: 1200px) {
           max-height: 500px;

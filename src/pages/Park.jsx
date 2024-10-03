@@ -67,13 +67,22 @@ const Park = () => {
               <p className="description">{description}</p>
               <p className="weather-info">{weather}</p>
               <div className="get-directions">
-                <a
-                  href={directionsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Get Directions
-                </a>
+                <div className="content">
+                  {cords.length === 2 ? (
+                    <p className="coordinates">
+                      {cords[0]}, {cords[1]}
+                    </p>
+                  ) : (
+                    ""
+                  )}
+                  <a
+                    href={directionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Get Directions
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -98,7 +107,9 @@ const Park = () => {
             <p className="subheading">Things To Do</p>
             <div className="content">
               <p>
-               {activities ? activities.map(activity => activity.name).join(', ') : ""}
+                {activities
+                  ? activities.map((activity) => activity.name).join(", ")
+                  : ""}
               </p>
             </div>
           </div>
@@ -109,7 +120,7 @@ const Park = () => {
             <p className="subheading">Things To Do</p>
             <div className="content">
               <p>
-               {topics ? topics.map(topic => topic.name).join(', ') : ""}
+                {topics ? topics.map((topic) => topic.name).join(", ") : ""}
               </p>
             </div>
           </div>

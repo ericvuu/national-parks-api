@@ -12,7 +12,7 @@ export default function useGeoLocation() {
 
   async function getLocation() {
     try {
-      const res = await axios.get("http://ip-api.com/json");
+      const res = await axios.get("https://ip-api.com/json");
       if (res.status === 200) {
         setLocationData(res.data);
       } else {

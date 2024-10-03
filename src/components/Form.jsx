@@ -25,6 +25,7 @@ const Form = () => {
       handleSearchClick(e);
     }
   };
+
   return (
     <div className="form-search">
       <div className="form-row">
@@ -99,7 +100,7 @@ const Form = () => {
               onKeyPress={handleKeyPress}
               placeholder="Enter search term"
             />
-            <button className="form-search-btn" onClick={handleSearchClick} on>
+            <button className="form-search-btn" onClick={handleSearchClick}>
               <img
                 src={searchIcon}
                 alt="Search Icon"

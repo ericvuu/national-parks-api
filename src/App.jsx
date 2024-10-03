@@ -8,9 +8,9 @@ import Explore from "./pages/Explore";
 import Park from "./pages/Park";
 import "./App.scss";
 
-
 function App() {
-  const { city, country, region, regionCode } = useGeoLocation();
+  const { location, loading, error } = useGeoLocation();
+  const { city, country, state, stateCode } = location || {};
   const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
 
   return (
@@ -19,13 +19,13 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Home city={city} country={country} state={region} stateCode={regionCode}/>}
+          element={<Home city={city} country={country} state={state} stateCode={stateCode} />}
         />
         <Route path="/about" element={<About />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/park" element={<Park />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </Router>
   );
 }

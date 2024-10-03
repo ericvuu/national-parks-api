@@ -155,7 +155,15 @@ const Park = () => {
                  {phoneNumbers
                   ? phoneNumbers.map((phone, index) => (
                   <div key={index} className="phone-info">
-                    <p className="phone">{phone.type}: <a href={`tel:${phone.phoneNumber}`}> {`(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`} {phone.extension ? `ext: ${phone.extension}`: ""}</a></p>
+                    <p>
+                      {phone.type}:{" "}
+                      <a href={`tel:${phone.phoneNumber}`}>
+                        {phone.phoneNumber.length === 10
+                          ? `(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`
+                          : phone.phoneNumber}
+                        {phone.extension ? ` ext: ${phone.extension}` : ""}
+                      </a>
+                    </p>
                   </div>
                   ))
                   : ""}

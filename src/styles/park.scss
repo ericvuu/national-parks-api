@@ -426,6 +426,11 @@
             padding-bottom: 5px;
           }
 
+          .email-description:not(:last-child) {
+            padding-bottom: 10px;
+            font-size: 1rem;
+          }
+
           .email-block {
             padding-bottom: 1rem;
           }
@@ -437,6 +442,11 @@
           @media (max-width: 1080px) {
             width: 100%;
             margin-top: 2rem;
+          }
+
+          .park-name:not(:last-child),
+          .park-info:not(:last-child) {
+            padding-bottom: 5px;
           }
 
           .park-name {

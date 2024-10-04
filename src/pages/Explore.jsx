@@ -4,6 +4,7 @@ import Form from "../components/Form";
 import Card from "../components/Card";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
 import useGetParks from "../hooks/useGetParks";
+import useGetParksByActivity from "../hooks/useGetParksByActivity";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -13,61 +14,41 @@ const Explore = () => {
   const [parks, setParks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const parksPerPage = 10;
+  const parksPerPage = 25;
   const query = useQuery();
   const qActivity = query.get("activity");
   const qStateCode = query.get("stateCode");
   const qSearchTerm = query.get("q");
   const formattedActivity = qActivity ? qActivity.replace(/-/g, " ") : null;
 
-  const { parkData, error, loading } = useGetParks(
-    qStateCode,
-    qSearchTerm,
-    currentPage,
-  );
+  const { parkData } = useGetParks(qStateCode, qSearchTerm, parksPerPage, currentPage);
+  const { activityParkData, activityParkDataTotal } = useGetParksByActivity(formattedActivity, currentPage);
 
   useEffect(() => {
-    if (parkData && parkData.data && qActivity == null) {
-      const fetchedParks = parkData.data;
-      const allParks = fetchedParks.map((park) => ({
-        name: park.fullName,
-        parkCode: park.parkCode,
-        image:
-          park.images && park.images[0] ? park.images[0].url : notFoundImage,
-        url: park.url,
-      }));
-      setParks(allParks);
-      setTotalPages(Math.ceil(parkData.total / parksPerPage));
-    } else if (parkData && parkData.data && qActivity) {
-      const fetchedParks = parkData.data;
-      let filteredParks = [];
-      fetchedParks.forEach((park) => {
-        const activities = park.activities;
-        let parkAdded = false;
-        if (activities.length) {
-          activities.forEach((activity) => {
-            const activityLC = activity.name.toLowerCase();
-           if (activityLC.includes(formattedActivity) || activityLC === formattedActivity) {
-             if (!parkAdded) {
-               filteredParks.push({
-                 name: park.fullName,
-                 parkCode: park.parkCode,
-                 image:
-                   park.images && park.images[0]
-                     ? park.images[0].url
-                     : notFoundImage,
-                 url: park.url,
-               });
-               parkAdded = true;
-             }
-           }
-          });
-        }
-      });
-      setParks(filteredParks);
-      setTotalPages(Math.ceil(parkData.total / parksPerPage));
+    if (qActivity) {
+      if (activityParkData) {
+        const allParks = activityParkData.map((park) => ({
+          name: park.fullName,
+          parkCode: park.parkCode,
+          image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+          url: park.url,
+        }));
+        setParks(allParks);
+        setTotalPages(Math.ceil(activityParkDataTotal / parksPerPage));
+      }
+    } else {
+      if (parkData) {
+        const allParks = parkData.data.map((park) => ({
+          name: park.fullName,
+          parkCode: park.parkCode,
+          image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+          url: park.url,
+        }));
+        setParks(allParks);
+        setTotalPages(Math.ceil(parkData.total / parksPerPage));
+      }
     }
-  }, [parkData, currentPage]);
+  }, [parkData, activityParkData, currentPage, qActivity]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -95,7 +76,7 @@ const Explore = () => {
       </div>
       <div className="explore-form">
         <div className="explore-form-container">
-          <Form />
+          <Form uState={qStateCode} uSearch={qSearchTerm}/>
         </div>
       </div>
       <div className="content-container container">
@@ -113,9 +94,6 @@ const Explore = () => {
         ) : (
           <p className="no-parks">No parks available.</p>
         )}
-        {
-
-        }
         <div className="pagination-controls">
           <button className="prev" onClick={handlePreviousPage} disabled={currentPage === 1}>
             Previous

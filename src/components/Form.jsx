@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIcon from "../assets/search-icon.svg";
 
-const Form = () => {
+const Form = ({uState, uSearch}) => {
   const navigate = useNavigate();
-  const [state, setState] = useState("");
-  const [search, setSearch] = useState("");
+  const [state, setState] = useState(uState || "");
+  const [search, setSearch] = useState(uSearch || "");
+
+  useEffect(() => {
+    setState(uState);
+    setSearch(uSearch)
+  }, [uState, uSearch]);
 
   const handleStateChange = (e) => {
     setState(e.target.value);
@@ -91,24 +96,20 @@ const Form = () => {
           </select>
         </div>
         <div className="form-col form-col-search">
-          <div className="input-container">
-            <input
-              className="form-input-field"
-              type="text"
-              value={search}
-              onChange={handleSearchChange}
-              onKeyPress={handleKeyPress}
-              placeholder="Enter search term"
-            />
-            <button className="form-search-btn" onClick={handleSearchClick}>
-              <img
-                src={searchIcon}
-                alt="Search Icon"
-                className="form-search-icon"
+            <div className="input-container">
+              <input
+                className="form-input-field"
+                type="text"
+                value={search}
+                onChange={handleSearchChange}
+                onKeyPress={handleKeyPress}
+                placeholder="Enter search term"
               />
-            </button>
+              <button className="form-search-btn" onClick={handleSearchClick}>
+                <img src={searchIcon} alt="Search Icon" className="form-search-icon" />
+              </button>
+            </div>
           </div>
-        </div>
       </div>
     </div>
   );

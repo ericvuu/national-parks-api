@@ -15,6 +15,10 @@
     background-image: url("/src/assets/images/banners/explore-banner.jpg");
     z-index: 1;
 
+    @media (max-width: 600px){
+      height: 65vh;
+    }
+
     &::before {
       content: "";
       position: absolute;

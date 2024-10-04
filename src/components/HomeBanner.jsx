@@ -8,6 +8,7 @@ import notFoundImage from "../assets/images/banners/not-found.jpg";
 import useGetParks from "../hooks/useGetParks";
 
 const HomeBanner = ({ city, country, state, stateCode }) => {
+  const parksPerPage = 3;
   const defaultParks = [
     { name: "Yosemite", image: yosemiteImage, id: "yose" },
     { name: "Arches National Park", image: archesImage, id: "arch" },
@@ -15,7 +16,7 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
   ];
 
   const [parks, setParks] = useState([]);
-  const { parkData, error, loading } = useGetParks(stateCode);
+  const { parkData, error, loading } = useGetParks(stateCode, null, parksPerPage);
 
   useEffect(() => {
     const storedParks = localStorage.getItem('parks');
@@ -57,7 +58,9 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
           <div className="banner-left">
             <p className="banner-subheading">Embrace the beauty</p>
             <h1 className="banner-heading">
-              {state && country === "United States"
+              {loading
+                ? `Fetching Parks in your State...`
+                : state && country === "United States"
                 ? `Explore the National Parks in ${state}`
                 : "Explore America's National Parks"}
             </h1>
@@ -65,19 +68,23 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
               Explore Parks
             </Link>
           </div>
-          <div className="banner-right">
-            {parks.map((park, index) => (
-              <Link
-                to={`/park?pCode=${park.id}`}
-                key={index}
-                className={`park-image park-image-${index + 1}`}
-                id={park.id}
-              >
-                <img src={park.image} alt={`${park.name} National Park`} />
-                <div className="park-name">{park.name}</div>
-              </Link>
-            ))}
-          </div>
+          {loading ? (
+            ""
+          ) : (
+            <div className="banner-right">
+              {parks.map((park, index) => (
+                <Link
+                  to={`/park?pCode=${park.id}`}
+                  key={index}
+                  className={`park-image park-image-${index + 1}`}
+                  id={park.id}
+                >
+                  <img src={park.image} alt={`${park.name} National Park`} />
+                  <div className="park-name">{park.name}</div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

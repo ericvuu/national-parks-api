@@ -5,6 +5,7 @@ export default function useGetPark(parkCode) {
   const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
   const [parkData, setParkData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (parkCode) {
@@ -13,6 +14,8 @@ export default function useGetPark(parkCode) {
   }, [parkCode]);
 
   async function getParkInfo() {
+    setLoading(true);
+
     try {
       const res = await axios.get(
         `https://developer.nps.gov/api/v1/parks?&api_key=${npsAPIKeys}&parkCode=${parkCode}`
@@ -24,10 +27,14 @@ export default function useGetPark(parkCode) {
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return {
     parkData,
+    error,
+    loading
   };
 }

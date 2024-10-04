@@ -9,7 +9,7 @@ const Home = ( { city, country, state, stateCode }) => {
       <HomeBanner city={city} country={country} state={state} stateCode={stateCode} />
       <div className="container-fluid">
         <Adventure/>
-        <HomeForm/>
+        <HomeForm uState={stateCode}/>
       </div>
     </>
   );

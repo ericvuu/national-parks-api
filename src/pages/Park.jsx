@@ -105,9 +105,7 @@ const Park = () => {
             <p className="subheading">Things To Do</p>
             <div className="content">
               <p>
-                {activities
-                  ? activities.map((activity) => activity.name).join(", ")
-                  : ""}
+                {Array.isArray(activities) && activities.length > 0 ? activities.map((activity) => activity.name).join(", ") : "Information not available"}
               </p>
             </div>
           </div>
@@ -118,7 +116,7 @@ const Park = () => {
             <p className="subheading">Things To Do</p>
             <div className="content">
               <p>
-                {topics ? topics.map((topic) => topic.name).join(", ") : ""}
+                {Array.isArray(topics) && topics.length > 0 ? topics.map((topic) => topic.name).join(", ") : "Information not available"}
               </p>
             </div>
           </div>

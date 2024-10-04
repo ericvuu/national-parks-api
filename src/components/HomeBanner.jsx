@@ -14,31 +14,27 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
     { name: "Glacier Bay National Park & Preserve", image: glacierBayImage, id: "glba" },
   ];
 
-  const shuffleArray = (array) => {
-    return array.sort(() => Math.random() - 0.5);
-  };
-
   const [parks, setParks] = useState(defaultParks);
   const { parkData, error, loading } = useGetParks(stateCode);
-
-   useEffect(() => {
+    useEffect(() => {
       if (parkData && parkData.data) {
-        let fetchedParks = parkData.data;
+        const fetchedParks = parkData.data.map((park, index) => {
+            if (index < 3) {
+              return {
+                id: park.parkCode,
+                name: park.fullName,
+                image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+                url: park.url,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean);
 
-        if (fetchedParks.length > 3) {
-          const shuffledParks = shuffleArray(fetchedParks);
-
-          const newParks = shuffledParks.slice(0, 3).map((park) => ({
-            id: park.parkCode,
-            name: park.fullName,
-            image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
-            url: park.url,
-          }
-        ));
-          setParks(newParks);
-        }
+        setParks(fetchedParks);
       }
-  }, [parkData]);
+    }, [parkData]);
+
 
   return (
     <>

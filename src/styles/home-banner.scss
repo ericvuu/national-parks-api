@@ -9,6 +9,10 @@
   padding: 0 5rem;
   z-index: 1;
 
+  @media (max-width: 600px) {
+    padding: 0 1rem;
+  }
+
   &::before {
     content: "";
     position: absolute;
@@ -24,6 +28,10 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 2rem;
+
+    @media (max-width: 600px) {
+      padding: 0;
+    }
 
     .banner-row {
       display: flex;
@@ -60,8 +68,12 @@
           max-width: 500px;
         }
 
-         @media (max-width: 1280px) {
+        @media (max-width: 1280px) {
           max-width: 300px;
+        }
+
+        @media (max-width: 600px) {
+          display: none;
         }
 
         .park-image {

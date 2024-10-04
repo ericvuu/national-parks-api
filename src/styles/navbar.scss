@@ -13,12 +13,20 @@
 
     img {
       width: 70px;
+
+      @media (max-width: 600px){
+        width: 60px;
+      }
     }
 
     p {
       color: #ffffff;
       margin-left: 15px;
       font-size: 2.5rem;
+
+      @media (max-width: 600px){
+        font-size: 1.5rem;
+      }
     }
   }
 

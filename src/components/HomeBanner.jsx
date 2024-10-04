@@ -14,61 +14,73 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
     { name: "Glacier Bay National Park & Preserve", image: glacierBayImage, id: "glba" },
   ];
 
-  const [parks, setParks] = useState(defaultParks);
+  const [parks, setParks] = useState([]);
   const { parkData, error, loading } = useGetParks(stateCode);
-    useEffect(() => {
-      if (parkData && parkData.data) {
-        const fetchedParks = parkData.data.map((park, index) => {
-            if (index < 3) {
-              return {
-                id: park.parkCode,
-                name: park.fullName,
-                image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
-                url: park.url,
-              };
-            }
-            return null;
-          })
-          .filter(Boolean);
 
+  useEffect(() => {
+    const storedParks = localStorage.getItem('parks');
+    if (storedParks) {
+      setParks(JSON.parse(storedParks));
+    } else {
+      setParks(defaultParks);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!stateCode) {
+      setParks(defaultParks);
+      localStorage.setItem('parks', JSON.stringify(defaultParks));
+      return;
+    }
+
+    if (!loading) {
+      if (error || (parkData && (!parkData.data || parkData.data.length === 0))) {
+        setParks(defaultParks);
+        localStorage.setItem('parks', JSON.stringify(defaultParks));
+      } else if (parkData && parkData.data.length > 0) {
+        const fetchedParks = parkData.data.slice(0, 3).map((park) => ({
+          id: park.parkCode,
+          name: park.fullName,
+          image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+          url: park.url,
+        }));
         setParks(fetchedParks);
+        localStorage.setItem('parks', JSON.stringify(fetchedParks));
       }
-    }, [parkData]);
-
+    }
+  }, [parkData, loading, error, stateCode]);
 
   return (
-    <>
-      <div className="home-banner">
-        <div className="banner-container">
-          <div className="banner-row">
-            <div className="banner-left">
-              <p className="banner-subheading">Embrace the beauty</p>
-              <h1 className="banner-heading">
-                {state && country == "United States"
-                  ? `Explore the National Parks in ${state}`
-                  : "Explore America's National Parks"}
-              </h1>
-              <Link to="/explore" className="btn btn-lg np-explore-btn">
-                Explore Parks
+    <div className="home-banner">
+      <div className="banner-container">
+        <div className="banner-row">
+          <div className="banner-left">
+            <p className="banner-subheading">Embrace the beauty</p>
+            <h1 className="banner-heading">
+              {state && country === "United States"
+                ? `Explore the National Parks in ${state}`
+                : "Explore America's National Parks"}
+            </h1>
+            <Link to="/explore" className="btn btn-lg np-explore-btn">
+              Explore Parks
+            </Link>
+          </div>
+          <div className="banner-right">
+            {parks.map((park, index) => (
+              <Link
+                to={`/park?pCode=${park.id}`}
+                key={index}
+                className={`park-image park-image-${index + 1}`}
+                id={park.id}
+              >
+                <img src={park.image} alt={`${park.name} National Park`} />
+                <div className="park-name">{park.name}</div>
               </Link>
-            </div>
-            <div className="banner-right">
-              {parks.map((park, index) => (
-                <Link
-                  to={`/park?pCode=${park.id}`}
-                  key={index}
-                  className={`park-image park-image-${index + 1}`}
-                  id={park.id}
-                >
-                  <img src={park.image} alt={`${park.name} National Park`} />
-                  <div className="park-name">{park.name}</div>
-                </Link>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

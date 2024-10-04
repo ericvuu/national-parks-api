@@ -23,7 +23,7 @@ const Explore = () => {
   const { parkData, error, loading } = useGetParks(
     qStateCode,
     qSearchTerm,
-    currentPage
+    currentPage,
   );
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const Explore = () => {
         if (activities.length) {
           activities.forEach((activity) => {
             const activityLC = activity.name.toLowerCase();
-           if (activityLC.includes(formattedActivity)) {
+           if (activityLC.includes(formattedActivity) || activityLC === formattedActivity) {
              if (!parkAdded) {
                filteredParks.push({
                  name: park.fullName,
@@ -65,6 +65,7 @@ const Explore = () => {
         }
       });
       setParks(filteredParks);
+      setTotalPages(Math.ceil(parkData.total / parksPerPage));
     }
   }, [parkData, currentPage]);
 

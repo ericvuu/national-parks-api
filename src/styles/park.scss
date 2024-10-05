@@ -45,8 +45,7 @@
     overflow: hidden;
     height: 60vh;
     background-size: cover;
-    background-position: center center;
-    background-attachment: fixed;
+    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -54,6 +53,11 @@
     padding: 2rem;
     position: relative;
     z-index: 1;
+
+    @media (min-width: 720px){
+      background-position: center center;
+      background-attachment: fixed;
+    }
 
     &::before {
       content: "";

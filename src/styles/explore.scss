@@ -6,8 +6,7 @@
     overflow: hidden;
     height: 60vh;
     background-size: cover;
-    background-position: center center;
-    background-attachment: fixed;
+    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -16,6 +15,11 @@
     position: relative;
     background-image: url("/src/assets/images/banners/explore-banner.jpg");
     z-index: 1;
+
+     @media (min-width: 720px){
+      background-position: center center;
+      background-attachment: fixed;
+    }
 
     @media (max-width: 600px){
       height: 65vh;

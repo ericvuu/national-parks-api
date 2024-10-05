@@ -12,14 +12,22 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
   const defaultParks = [
     { name: "Yosemite", image: yosemiteImage, id: "yose" },
     { name: "Arches National Park", image: archesImage, id: "arch" },
-    { name: "Glacier Bay National Park & Preserve", image: glacierBayImage, id: "glba" },
+    {
+      name: "Glacier Bay National Park & Preserve",
+      image: glacierBayImage,
+      id: "glba",
+    },
   ];
 
   const [parks, setParks] = useState([]);
-  const { parkData, error, loading } = useGetParks(stateCode, null, parksPerPage);
+  const { parkData, error, loading } = useGetParks(
+    stateCode,
+    null,
+    parksPerPage
+  );
 
   useEffect(() => {
-    const storedParks = localStorage.getItem('parks');
+    const storedParks = localStorage.getItem("parks");
     if (storedParks) {
       setParks(JSON.parse(storedParks));
     } else {
@@ -30,30 +38,35 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
   useEffect(() => {
     if (!stateCode) {
       setParks(defaultParks);
-      localStorage.setItem('parks', JSON.stringify(defaultParks));
+      localStorage.setItem("parks", JSON.stringify(defaultParks));
       return;
     }
 
     if (!loading) {
-      if (error || (parkData && (!parkData.data || parkData.data.length === 0))) {
+      if (
+        error ||
+        (parkData && (!parkData.data || parkData.data.length === 0))
+      ) {
         setParks(defaultParks);
-        localStorage.setItem('parks', JSON.stringify(defaultParks));
+        localStorage.setItem("parks", JSON.stringify(defaultParks));
       } else if (parkData && parkData.data.length > 0) {
         const fetchedParks = parkData.data.slice(0, 3).map((park) => ({
           id: park.parkCode,
           name: park.fullName,
-          image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+          image:
+            park.images && park.images[0] ? park.images[0].url : notFoundImage,
           url: park.url,
         }));
         setParks(fetchedParks);
-        localStorage.setItem('parks', JSON.stringify(fetchedParks));
+        localStorage.setItem("parks", JSON.stringify(fetchedParks));
       }
     }
   }, [parkData, loading, error, stateCode]);
 
   return (
     <div className="home-banner">
-      <div className="banner-container">
+      <div className="banner-image"></div>
+      <div className="banner-content-container">
         <div className="banner-row">
           <div className="banner-left">
             <p className="banner-subheading">Embrace the beauty</p>

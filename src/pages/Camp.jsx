@@ -17,10 +17,10 @@ const formatCampValues = (value) => {
 };
 
 const Camp = () => {
-  const [camp, setcamp] = useState(null);
+  const [camp, setCamp] = useState(null);
   const query = useQuery();
   const qCampID = query.get("cID");
-  const [fullName, setfullName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [description, setDescription] = useState("");
   const [weather, setWeather] = useState("");
   const [directionsUrl, setDirectionsUrl] = useState("");
@@ -38,9 +38,9 @@ const Camp = () => {
   useEffect(() => {
     if (campData && campData.data) {
       const fetchedcamp = campData.data[0];
-      setcamp(fetchedcamp);
+      setCamp(fetchedcamp);
       setBannerImage(fetchedcamp.images[0].url);
-      setfullName(fetchedcamp.name);
+      setFullName(fetchedcamp.name);
       setDescription(fetchedcamp.description);
       setDirectionsUrl(fetchedcamp.directionsUrl);
       setWeather(fetchedcamp.weatherOverview);

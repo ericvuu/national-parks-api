@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import defaultBanner from "../assets/images/camp-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
 
-import useGetcamp from "../hooks/useGetcamp";
+import useGetCamp from "../hooks/useGetcamp";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -32,7 +32,7 @@ const Camp = () => {
   const [operatingHours, setOperatingHours] = useState([]);
   const [images, setImages] = useState([]);
   const [bannerImage, setBannerImage] = useState(defaultBanner);
-  const { campData, error, loading } = useGetcamp(qCampID);
+  const { campData, error, loading } = useGetCamp(qCampID);
 
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIcon from "../assets/search-icon.svg";
 
-const Form = ({uState, uSearch}) => {
+const Form = ({uPath, uState, uSearch}) => {
   const navigate = useNavigate();
   const [state, setState] = useState(uState || "");
   const [search, setSearch] = useState(uSearch || "");
@@ -22,7 +22,7 @@ const Form = ({uState, uSearch}) => {
 
   const handleSearchClick = (e) => {
     e.preventDefault();
-    navigate(`/explore?${state ? `&stateCode=${state}` : ''}${search ? `&q=${search}` : ''}`);
+    navigate(`/${uPath}?${state ? `&stateCode=${state}` : ''}${search ? `&q=${search}` : ''}`);
   };
 
   const handleKeyPress = (e) => {
@@ -37,7 +37,7 @@ const Form = ({uState, uSearch}) => {
         <div className="form-col form-col-state">
           <select
             className="form-select-field"
-            value={state}
+            value={state || ""}
             onChange={handleStateChange}
             onKeyPress={handleKeyPress}
           >
@@ -96,20 +96,24 @@ const Form = ({uState, uSearch}) => {
           </select>
         </div>
         <div className="form-col form-col-search">
-            <div className="input-container">
-              <input
-                className="form-input-field"
-                type="text"
-                value={search}
-                onChange={handleSearchChange}
-                onKeyPress={handleKeyPress}
-                placeholder="Enter search term"
+          <div className="input-container">
+            <input
+              className="form-input-field"
+              type="text"
+              value={search || ""}
+              onChange={handleSearchChange}
+              onKeyPress={handleKeyPress}
+              placeholder="Enter search term"
+            />
+            <button className="form-search-btn" onClick={handleSearchClick}>
+              <img
+                src={searchIcon}
+                alt="Search Icon"
+                className="form-search-icon"
               />
-              <button className="form-search-btn" onClick={handleSearchClick}>
-                <img src={searchIcon} alt="Search Icon" className="form-search-icon" />
-              </button>
-            </div>
+            </button>
           </div>
+        </div>
       </div>
     </div>
   );

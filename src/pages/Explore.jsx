@@ -21,16 +21,26 @@ const Explore = () => {
   const qSearchTerm = query.get("q");
   const formattedActivity = qActivity ? qActivity.replace(/-/g, " ") : null;
 
-  const { parkData } = useGetParks(qStateCode, qSearchTerm, parksPerPage, currentPage);
-  const { activityParkData, activityParkDataTotal } = useGetParksByActivity(formattedActivity, currentPage);
+  const { parkData } = useGetParks(
+    qStateCode,
+    qSearchTerm,
+    parksPerPage,
+    currentPage
+  );
+  const { activityParkData, activityParkDataTotal } = useGetParksByActivity(
+    formattedActivity,
+    currentPage
+  );
 
   useEffect(() => {
     if (qActivity) {
       if (activityParkData) {
         const allParks = activityParkData.map((park) => ({
+          parkID: park.id,
           name: park.fullName,
           parkCode: park.parkCode,
-          image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+          image:
+            park.images && park.images[0] ? park.images[0].url : notFoundImage,
           url: park.url,
         }));
         setParks(allParks);
@@ -39,9 +49,11 @@ const Explore = () => {
     } else {
       if (parkData) {
         const allParks = parkData.data.map((park) => ({
+          parkID: park.id,
           name: park.fullName,
           parkCode: park.parkCode,
-          image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+          image:
+            park.images && park.images[0] ? park.images[0].url : notFoundImage,
           url: park.url,
         }));
         setParks(allParks);
@@ -76,7 +88,7 @@ const Explore = () => {
       </div>
       <div className="explore-form">
         <div className="explore-form-container">
-          <Form uState={qStateCode} uSearch={qSearchTerm}/>
+          <Form uPath={`explore`} uState={qStateCode} uSearch={qSearchTerm} />
         </div>
       </div>
       <div className="content-container container">
@@ -88,6 +100,7 @@ const Explore = () => {
                 parkCode={park.parkCode}
                 title={park.name}
                 imageUrl={park.image}
+                parkUrl={`/park?pCode=${park.parkCode}`}
               />
             ))}
           </div>
@@ -95,11 +108,16 @@ const Explore = () => {
           <p className="no-parks">No parks available.</p>
         )}
         <div className="pagination-controls">
-          <button className="prev" onClick={handlePreviousPage} disabled={currentPage === 1}>
+          <button
+            className="prev"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+          >
             Previous
           </button>
           <span>{`Page ${currentPage} of ${totalPages}`}</span>
-          <button className="next"
+          <button
+            className="next"
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
           >

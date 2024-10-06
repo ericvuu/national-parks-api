@@ -73,13 +73,17 @@ const Park = () => {
                   ) : (
                     ""
                   )}
-                  <a
-                    href={directionsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Get Directions
-                  </a>
+                  {directionsUrl ? (
+                    <a
+                      href={directionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Get Directions
+                    </a>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>
@@ -105,7 +109,9 @@ const Park = () => {
             <p className="subheading">Things To Do</p>
             <div className="content">
               <p>
-                {Array.isArray(activities) && activities.length > 0 ? activities.map((activity) => activity.name).join(", ") : "Information not available"}
+                {Array.isArray(activities) && activities.length > 0
+                  ? activities.map((activity) => activity.name).join(", ")
+                  : "Information not available"}
               </p>
             </div>
           </div>
@@ -116,7 +122,9 @@ const Park = () => {
             <p className="subheading">Things To Do</p>
             <div className="content">
               <p>
-                {Array.isArray(topics) && topics.length > 0 ? topics.map((topic) => topic.name).join(", ") : "Information not available"}
+                {Array.isArray(topics) && topics.length > 0
+                  ? topics.map((topic) => topic.name).join(", ")
+                  : "Information not available"}
               </p>
             </div>
           </div>
@@ -133,53 +141,76 @@ const Park = () => {
             <h3>Contact</h3>
             <div className="text-content">
               <div className="left-block">
-               <div className="email-block">
-                <h4>Email</h4>
-                 {emails
-                  ? emails.map((email, index) => (
-                      <div key={index} className="email-info">
-                        {email.description ? (
-                          <p className="email-description">{email.description}</p>
-                        ): ""}
-                        <p className="email"><a href={`mailto:${email.emailAddress}`}>{email.emailAddress}</a></p>
-                      </div>
-                    ))
-                  : ""}
-               </div>
-               <div className="phone-block">
-                <h4>Phone</h4>
-                 {phoneNumbers
-                  ? phoneNumbers.map((phone, index) => (
-                  <div key={index} className="phone-info">
-                    <p>
-                      {phone.type}:{" "}
-                      <a href={`tel:${phone.phoneNumber}`}>
-                        {phone.phoneNumber.length === 10
-                          ? `(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`
-                          : phone.phoneNumber}
-                        {phone.extension ? ` ext: ${phone.extension}` : ""}
-                      </a>
-                    </p>
-                  </div>
-                  ))
-                  : ""}
-               </div>
+                <div className="email-block">
+                  <h4>Email</h4>
+                  {emails
+                    ? emails.map((email, index) => (
+                        <div key={index} className="email-info">
+                          {email.description ? (
+                            <p className="email-description">
+                              {email.description}
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                          <p className="email">
+                            <a href={`mailto:${email.emailAddress}`}>
+                              {email.emailAddress}
+                            </a>
+                          </p>
+                        </div>
+                      ))
+                    : ""}
+                </div>
+                <div className="phone-block">
+                  <h4>Phone</h4>
+                  {phoneNumbers
+                    ? phoneNumbers.map((phone, index) => (
+                        <div key={index} className="phone-info">
+                          <p>
+                            {phone.type}:{" "}
+                            <a href={`tel:${phone.phoneNumber}`}>
+                              {phone.phoneNumber.length === 10
+                                ? `(${phone.phoneNumber.slice(
+                                    0,
+                                    3
+                                  )}) ${phone.phoneNumber.slice(
+                                    3,
+                                    6
+                                  )}-${phone.phoneNumber.slice(6)}`
+                                : phone.phoneNumber}
+                              {phone.extension
+                                ? ` ext: ${phone.extension}`
+                                : ""}
+                            </a>
+                          </p>
+                        </div>
+                      ))
+                    : ""}
+                </div>
               </div>
               <div className="right-block">
-                  {operatingHours
+                {operatingHours
                   ? operatingHours.map((park, index) => (
                       <div key={index} className="park-info">
                         <h4 className="park-name">{park.name}</h4>
-                         {park.description ? (
+                        {park.description ? (
                           <p className="park-description">{park.description}</p>
-                        ): ""}
+                        ) : (
+                          ""
+                        )}
                         <div className="operating-hours">
                           <div className="hours-row">
-                            {Object.entries(park.standardHours).map(([day, hours], dayIndex) => (
-                              <span key={dayIndex} className="hours-day">
-                                <span className="day">{`${day.charAt(0).toUpperCase() + day.slice(1)}`}</span>: {`${hours}`}
-                              </span>
-                            ))}
+                            {Object.entries(park.standardHours).map(
+                              ([day, hours], dayIndex) => (
+                                <span key={dayIndex} className="hours-day">
+                                  <span className="day">{`${
+                                    day.charAt(0).toUpperCase() + day.slice(1)
+                                  }`}</span>
+                                  : {`${hours}`}
+                                </span>
+                              )
+                            )}
                           </div>
                         </div>
                       </div>

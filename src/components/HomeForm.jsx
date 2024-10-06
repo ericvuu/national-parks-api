@@ -8,7 +8,7 @@ const HomeForm = ({ uState }) => {
         <div className="text-content">
           <h2 className="section-title">Find Your Park</h2>
         </div>
-        <Form uState={uState}/>
+        <Form uPath={`explore`} uState={uState} />
       </div>
     </div>
   );

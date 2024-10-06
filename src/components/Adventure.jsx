@@ -9,7 +9,7 @@ const Adventure = ({ city, country, state, stateCode }) => {
     <div className="adventure-section">
       <h2 className="section-title">Choose Your Adventure</h2>
       <div className="cards-container">
-        <Link to="/explore?activity=camping" className="card-link">
+        <Link to="/campgrounds" className="card-link">
           <div className="card">
             <img src={camping} alt="Camping Adventure" />
             <div className="card-title">Camping</div>

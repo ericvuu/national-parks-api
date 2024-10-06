@@ -6,6 +6,9 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Explore from "./pages/Explore";
 import Park from "./pages/Park";
+import CampFinder from "./pages/CampFinder";
+import Camp from "./pages/Camp";
+
 import "./App.scss";
 
 function App() {
@@ -24,6 +27,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/park" element={<Park />} />
+        <Route path="/campgrounds" element={<CampFinder />} />
+        <Route path="/camp" element={<Camp />} />
       </Routes>
       <Footer />
     </Router>

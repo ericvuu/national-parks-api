@@ -1,39 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import Form from "../components/Form";
 import Card from "../components/Card";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
-import useGetCamps from "../hooks/useGetCamps";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
 
 const CampFinder = () => {
-  const [camps, setcamps] = useState([]);
+  const [camps, setCamps] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const campsPerPage = 25;
   const query = useQuery();
   const qStateCode = query.get("stateCode");
   const qSearchTerm = query.get("q");
-
-  const { campData } = useGetCamps(qStateCode, qSearchTerm,campsPerPage,currentPage);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-   if (campData && campData.data && campData.data.length > 0) {
-        const allcamps = campData.data.map((camp) => ({
-          campID: camp.id,
-          name: camp.name,
-          parkCode: camp.parkCode,
-          image:
-            camp.images && camp.images[0] ? camp.images[0].url : notFoundImage,
-          url: camp.url,
-        }));
-        setcamps(allcamps);
-        setTotalPages(Math.ceil(campData.total / campsPerPage));
-    }
-  }, [campData, currentPage]);
+    const fetchCamps = async () => {
+      const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+      const startCount = (currentPage - 1) * campsPerPage + 1;
+
+      setLoading(true);
+
+      try {
+        const apiUrl = `https://developer.nps.gov/api/v1/campgrounds?api_key=${npsAPIKeys}${
+          qStateCode ? `&stateCode=${qStateCode}` : ""
+        }${qSearchTerm ? `&q=${qSearchTerm}` : ""}&start=${startCount}&limit=${campsPerPage}`;
+
+        const res = await axios.get(apiUrl);
+
+        if (res.status === 200) {
+          const allCamps = res.data.data.map((camp) => ({
+            campID: camp.id,
+            name: camp.name,
+            parkCode: camp.parkCode,
+            image: camp.images && camp.images[0] ? camp.images[0].url : notFoundImage,
+            url: camp.url,
+          }));
+          setCamps(allCamps);
+          setTotalPages(Math.ceil(res.data.total / campsPerPage));
+          setError(null);
+        } else {
+          setError("Failed to fetch location");
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCamps();
+  }, [qStateCode, qSearchTerm, currentPage]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -66,12 +89,16 @@ const CampFinder = () => {
         </div>
       </div>
       <div className="content-container container">
-        {camps.length > 0 ? (
+        {loading ? (
+          <p className="status">Loading...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : camps.length > 0 ? (
           <div className="gallery">
-            {camps.map((camp, index) => (
+            {camps.map((camp) => (
               <Card
                 id={camp.campID}
-                key={index}
+                key={camp.campID}
                 title={camp.name}
                 imageUrl={camp.image}
                 parkUrl={`/camp?cID=${camp.campID}`}
@@ -79,7 +106,7 @@ const CampFinder = () => {
             ))}
           </div>
         ) : (
-          <p className="no-camps">No Camps Available</p>
+          <p className="status">No Camps Available</p>
         )}
         <div className="pagination-controls">
           <button

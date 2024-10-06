@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import Form from "../components/Form";
 import Card from "../components/Card";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
-import useGetParks from "../hooks/useGetParks";
-import useGetParksByActivity from "../hooks/useGetParksByActivity";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -14,6 +13,8 @@ const Explore = () => {
   const [parks, setParks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const parksPerPage = 25;
   const query = useQuery();
   const qActivity = query.get("activity");
@@ -21,46 +22,48 @@ const Explore = () => {
   const qSearchTerm = query.get("q");
   const formattedActivity = qActivity ? qActivity.replace(/-/g, " ") : null;
 
-  const { parkData } = useGetParks(
-    qStateCode,
-    qSearchTerm,
-    parksPerPage,
-    currentPage
-  );
-  const { activityParkData, activityParkDataTotal } = useGetParksByActivity(
-    formattedActivity,
-    currentPage
-  );
-
   useEffect(() => {
-    if (qActivity) {
-      if (activityParkData) {
-        const allParks = activityParkData.map((park) => ({
-          parkID: park.id,
-          name: park.fullName,
-          parkCode: park.parkCode,
-          image:
-            park.images && park.images[0] ? park.images[0].url : notFoundImage,
-          url: park.url,
-        }));
-        setParks(allParks);
-        setTotalPages(Math.ceil(activityParkDataTotal / parksPerPage));
+    const fetchParks = async () => {
+      setLoading(true);
+      setError(null);
+
+      const startCount = (currentPage - 1) * parksPerPage + 1;
+      const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+
+      try {
+        const apiUrl = `https://developer.nps.gov/api/v1/parks?api_key=${npsAPIKeys}${qStateCode ? `&stateCode=${qStateCode}` : ''}${qSearchTerm ? `&q=${qSearchTerm}` : ''}&start=${startCount}&limit=${parksPerPage}`;
+        const res = await axios.get(apiUrl);
+
+        if (res.status === 200) {
+          let parksData = res.data.data;
+
+          if (qActivity) {
+            parksData = parksData.filter((park) =>
+              park.activities.some((act) => act.name.toLowerCase() === formattedActivity.toLowerCase())
+            );
+          }
+
+          setParks(parksData.map((park) => ({
+            parkID: park.id,
+            name: park.fullName,
+            parkCode: park.parkCode,
+            image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+            url: park.url,
+          })));
+
+          setTotalPages(Math.ceil(res.data.total / parksPerPage));
+        } else {
+          setError("Failed to fetch parks");
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    } else {
-      if (parkData) {
-        const allParks = parkData.data.map((park) => ({
-          parkID: park.id,
-          name: park.fullName,
-          parkCode: park.parkCode,
-          image:
-            park.images && park.images[0] ? park.images[0].url : notFoundImage,
-          url: park.url,
-        }));
-        setParks(allParks);
-        setTotalPages(Math.ceil(parkData.total / parksPerPage));
-      }
-    }
-  }, [parkData, activityParkData, currentPage, qActivity]);
+    };
+
+    fetchParks();
+  }, [qStateCode, qSearchTerm, currentPage, formattedActivity]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -92,11 +95,13 @@ const Explore = () => {
         </div>
       </div>
       <div className="content-container container">
-        {parks.length > 0 ? (
+        {loading ? (
+          <p className="status">Loading parks...</p>
+        ) : parks.length > 0 ? (
           <div className="gallery">
-            {parks.map((park, index) => (
+            {parks.map((park) => (
               <Card
-                key={index}
+                key={park.parkID}
                 parkCode={park.parkCode}
                 title={park.name}
                 imageUrl={park.image}
@@ -105,7 +110,7 @@ const Explore = () => {
             ))}
           </div>
         ) : (
-          <p className="no-parks">No parks available.</p>
+          <p className="status">No parks available.</p>
         )}
         <div className="pagination-controls">
           <button

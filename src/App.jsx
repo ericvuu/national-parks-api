@@ -8,16 +8,17 @@ import Explore from "./pages/Explore";
 import Park from "./pages/Park";
 import CampFinder from "./pages/CampFinder";
 import Camp from "./pages/Camp";
+import ScrollToTop from "./components/ScrollToTop";
 
 import "./App.scss";
 
 function App() {
   const { location, loading, error } = useGeoLocation();
   const { city, country, state, stateCode } = location || {};
-  const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
 
   return (
     <Router>
+      <ScrollToTop/>
       <Navbar />
       <Routes>
         <Route

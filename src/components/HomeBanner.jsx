@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import yosemiteImage from "../assets/images/banners/yosemite.jpg";
 import archesImage from "../assets/images/banners/arches.jpg";
 import glacierBayImage from "../assets/images/banners/glacier-bay.jpg";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
-
-import useGetParks from "../hooks/useGetParks";
 
 const HomeBanner = ({ city, country, state, stateCode }) => {
   const parksPerPage = 3;
@@ -19,49 +18,45 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
     },
   ];
 
-  const [parks, setParks] = useState([]);
-  const { parkData, error, loading } = useGetParks(
-    stateCode,
-    null,
-    parksPerPage
-  );
+  const [parks, setParks] = useState(defaultParks);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const storedParks = localStorage.getItem("parks");
-    if (storedParks) {
-      setParks(JSON.parse(storedParks));
-    } else {
-      setParks(defaultParks);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!stateCode) {
-      setParks(defaultParks);
-      localStorage.setItem("parks", JSON.stringify(defaultParks));
-      return;
-    }
-
-    if (!loading) {
-      if (
-        error ||
-        (parkData && (!parkData.data || parkData.data.length === 0))
-      ) {
+    const fetchParks = async () => {
+      if (!stateCode) {
         setParks(defaultParks);
-        localStorage.setItem("parks", JSON.stringify(defaultParks));
-      } else if (parkData && parkData.data.length > 0) {
-        const fetchedParks = parkData.data.slice(0, 3).map((park) => ({
-          id: park.parkCode,
-          name: park.fullName,
-          image:
-            park.images && park.images[0] ? park.images[0].url : notFoundImage,
-          url: park.url,
-        }));
-        setParks(fetchedParks);
-        localStorage.setItem("parks", JSON.stringify(fetchedParks));
+        setLoading(false);
+        return;
       }
-    }
-  }, [parkData, loading, error, stateCode]);
+
+      setLoading(true);
+      const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+
+      try {
+        const apiUrl = `https://developer.nps.gov/api/v1/parks?api_key=${npsAPIKeys}&stateCode=${stateCode}&limit=${parksPerPage}`;
+        const res = await axios.get(apiUrl);
+
+        if (res.status === 200) {
+          const fetchedParks = res.data.data.slice(0, parksPerPage).map((park) => ({
+            id: park.parkCode,
+            name: park.fullName,
+            image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+          }));
+          setParks(fetchedParks);
+        } else {
+          setParks(defaultParks);
+        }
+      } catch (err) {
+        setError(err.message);
+        setParks(defaultParks);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParks();
+  }, [stateCode]);
 
   return (
     <div className="home-banner">
@@ -81,11 +76,11 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
               Explore Parks
             </Link>
           </div>
-          {loading ? (
-            ""
-          ) : (
-            <div className="banner-right">
-              {parks.map((park, index) => (
+          <div className="banner-right">
+            {loading ? (
+              <p>Loading parks...</p>
+            ) : (
+              parks.map((park, index) => (
                 <Link
                   to={`/park?pCode=${park.id}`}
                   key={index}
@@ -95,9 +90,9 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
                   <img src={park.image} alt={`${park.name} National Park`} />
                   <div className="park-name">{park.name}</div>
                 </Link>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>

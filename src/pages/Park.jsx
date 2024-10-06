@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import defaultBanner from "../assets/images/park-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
-
-import useGetPark from "../hooks/useGetPark";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
 
 const Park = () => {
-  const [park, setPark] = useState(null);
   const query = useQuery();
   const qPCode = query.get("pCode");
-  const [fullName, setfullName] = useState("");
+  const [parkData, setParkData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [fullName, setFullName] = useState("");
   const [description, setDescription] = useState("");
   const [weather, setWeather] = useState("");
   const [directionsUrl, setDirectionsUrl] = useState("");
@@ -25,15 +27,39 @@ const Park = () => {
   const [operatingHours, setOperatingHours] = useState([]);
   const [images, setImages] = useState([]);
   const [bannerImage, setBannerImage] = useState(defaultBanner);
-  const { parkData, error, loading } = useGetPark(qPCode);
 
+  useEffect(() => {
+    const getParkInfo = async (parkCode) => {
+      if (!parkCode) return;
+
+      setLoading(true);
+      const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+
+      try {
+        const res = await axios.get(
+          `https://developer.nps.gov/api/v1/parks?&api_key=${npsAPIKeys}&parkCode=${parkCode}`
+        );
+
+        if (res.status === 200 && res.data.data.length > 0) {
+          setParkData(res.data);
+        } else {
+          setError("Failed to fetch location");
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getParkInfo(qPCode);
+  }, [qPCode]);
 
   useEffect(() => {
     if (parkData && parkData.data) {
       const fetchedPark = parkData.data[0];
-      setPark(fetchedPark);
-      setBannerImage(fetchedPark.images[0].url);
-      setfullName(fetchedPark.fullName);
+      setBannerImage(fetchedPark.images[0]?.url || defaultBanner);
+      setFullName(fetchedPark.fullName);
       setDescription(fetchedPark.description);
       setDirectionsUrl(fetchedPark.directionsUrl);
       setWeather(fetchedPark.weatherInfo);
@@ -66,14 +92,12 @@ const Park = () => {
               <p className="weather-info">{weather}</p>
               <div className="get-directions">
                 <div className="content">
-                  {cords.length === 2 ? (
+                  {cords.length === 2 && (
                     <p className="coordinates">
                       {cords[0]}, {cords[1]}
                     </p>
-                  ) : (
-                    ""
                   )}
-                  {directionsUrl ? (
+                  {directionsUrl && (
                     <a
                       href={directionsUrl}
                       target="_blank"
@@ -81,8 +105,6 @@ const Park = () => {
                     >
                       Get Directions
                     </a>
-                  ) : (
-                    ""
                   )}
                 </div>
               </div>
@@ -98,10 +120,8 @@ const Park = () => {
         </div>
         <div className="activities-container">
           <div className="image-container">
-            {images[0] ? (
+            {images[0] && (
               <img src={images[0].url} alt={images[0].altText} />
-            ) : (
-              ""
             )}
           </div>
           <div className="activities-content">
@@ -110,7 +130,7 @@ const Park = () => {
             <div className="content">
               <p>
                 {Array.isArray(activities) && activities.length > 0
-                  ? activities.map((activity) => activity.name).join(", ")
+                  ? activities.map(activity => activity.name).join(", ")
                   : "Information not available"}
               </p>
             </div>
@@ -119,20 +139,18 @@ const Park = () => {
         <div className="topics-container">
           <div className="topics-content">
             <h3>Topics</h3>
-            <p className="subheading">Things To Do</p>
+            <p className="subheading">Things To Explore</p>
             <div className="content">
               <p>
                 {Array.isArray(topics) && topics.length > 0
-                  ? topics.map((topic) => topic.name).join(", ")
+                  ? topics.map(topic => topic.name).join(", ")
                   : "Information not available"}
               </p>
             </div>
           </div>
           <div className="image-container">
-            {images[1] ? (
+            {images[1] && (
               <img src={images[1].url} alt={images[1].altText} />
-            ) : (
-              ""
             )}
           </div>
         </div>
@@ -143,79 +161,56 @@ const Park = () => {
               <div className="left-block">
                 <div className="email-block">
                   <h4>Email</h4>
-                  {emails
-                    ? emails.map((email, index) => (
-                        <div key={index} className="email-info">
-                          {email.description ? (
-                            <p className="email-description">
-                              {email.description}
-                            </p>
-                          ) : (
-                            ""
-                          )}
-                          <p className="email">
-                            <a href={`mailto:${email.emailAddress}`}>
-                              {email.emailAddress}
-                            </a>
-                          </p>
-                        </div>
-                      ))
-                    : ""}
+                  {emails.map((email, index) => (
+                    <div key={index} className="email-info">
+                      {email.description && (
+                        <p className="email-description">{email.description}</p>
+                      )}
+                      <p className="email">
+                        <a href={`mailto:${email.emailAddress}`}>
+                          {email.emailAddress}
+                        </a>
+                      </p>
+                    </div>
+                  ))}
                 </div>
                 <div className="phone-block">
                   <h4>Phone</h4>
-                  {phoneNumbers
-                    ? phoneNumbers.map((phone, index) => (
-                        <div key={index} className="phone-info">
-                          <p>
-                            {phone.type}:{" "}
-                            <a href={`tel:${phone.phoneNumber}`}>
-                              {phone.phoneNumber.length === 10
-                                ? `(${phone.phoneNumber.slice(
-                                    0,
-                                    3
-                                  )}) ${phone.phoneNumber.slice(
-                                    3,
-                                    6
-                                  )}-${phone.phoneNumber.slice(6)}`
-                                : phone.phoneNumber}
-                              {phone.extension
-                                ? ` ext: ${phone.extension}`
-                                : ""}
-                            </a>
-                          </p>
-                        </div>
-                      ))
-                    : ""}
+                  {phoneNumbers.map((phone, index) => (
+                    <div key={index} className="phone-info">
+                      <p>
+                        {phone.type}:{" "}
+                        <a href={`tel:${phone.phoneNumber}`}>
+                          {phone.phoneNumber.length === 10
+                            ? `(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`
+                            : phone.phoneNumber}
+                          {phone.extension ? ` ext: ${phone.extension}` : ""}
+                        </a>
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
               <div className="right-block">
-                {operatingHours
-                  ? operatingHours.map((park, index) => (
-                      <div key={index} className="park-info">
-                        <h4 className="park-name">{park.name}</h4>
-                        {park.description ? (
-                          <p className="park-description">{park.description}</p>
-                        ) : (
-                          ""
+                {operatingHours.map((park, index) => (
+                  <div key={index} className="park-info">
+                    <h4 className="park-name">{park.name}</h4>
+                    {park.description && (
+                      <p className="park-description">{park.description}</p>
+                    )}
+                    <div className="operating-hours">
+                      <div className="hours-row">
+                        {Object.entries(park.standardHours).map(
+                          ([day, hours], dayIndex) => (
+                            <span key={dayIndex} className="hours-day">
+                              <span className="day">{`${day.charAt(0).toUpperCase() + day.slice(1)}`}</span>: {`${hours}`}
+                            </span>
+                          )
                         )}
-                        <div className="operating-hours">
-                          <div className="hours-row">
-                            {Object.entries(park.standardHours).map(
-                              ([day, hours], dayIndex) => (
-                                <span key={dayIndex} className="hours-day">
-                                  <span className="day">{`${
-                                    day.charAt(0).toUpperCase() + day.slice(1)
-                                  }`}</span>
-                                  : {`${hours}`}
-                                </span>
-                              )
-                            )}
-                          </div>
-                        </div>
                       </div>
-                    ))
-                  : ""}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

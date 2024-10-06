@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import defaultBanner from "../assets/images/camp-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
 
-import useGetCamp from "../hooks/useGetcamp";
+import useGetCamp from "../hooks/useGetCamp";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);

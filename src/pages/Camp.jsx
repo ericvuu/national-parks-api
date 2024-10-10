@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import defaultBanner from "../assets/images/camp-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
 
-const useQuery = () => {
+const useURLQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
 
@@ -12,72 +13,50 @@ const formatCampValues = (value) => {
   if (Array.isArray(value)) {
     return value.length > 0 ? value.join(", ") : "Not Available";
   }
-  return value ? value : "Not Available";
+  return value || "Not Available";
+};
+
+const fetchCampInfo = async (qCampID) => {
+  const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+  const apiUrl = `https://developer.nps.gov/api/v1/campgrounds?api_key=${npsAPIKeys}&id=${qCampID}`;
+  const res = await axios.get(apiUrl);
+  if (res.status === 200 && res.data.data.length > 0) {
+    return res.data.data[0];
+  }
+  throw new Error("Failed to fetch location");
 };
 
 const Camp = () => {
-  const query = useQuery();
+  const query = useURLQuery();
   const qCampID = query.get("cID");
-  const [campData, setCampData] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const [fullName, setFullName] = useState("");
-  const [description, setDescription] = useState("");
-  const [weather, setWeather] = useState("");
-  const [directionsUrl, setDirectionsUrl] = useState("");
-  const [cords, setCords] = useState([]);
-  const [emails, setEmails] = useState([]);
-  const [phoneNumbers, setPhoneNumbers] = useState([]);
-  const [amenities, setAmenities] = useState([]);
-  const [campsites, setCampSites] = useState([]);
-  const [operatingHours, setOperatingHours] = useState([]);
-  const [images, setImages] = useState([]);
-  const [bannerImage, setBannerImage] = useState(defaultBanner);
+  const { data: campData, error, isLoading } = useQuery({
+    queryKey: ["campground", qCampID],
+    queryFn: () => fetchCampInfo(qCampID),
+    enabled: !!qCampID,
+  });
 
-  useEffect(() => {
-    const getCampInfo = async () => {
-      if (!qCampID) return;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-      setLoading(true);
-      const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+  const {
+    name: fullName,
+    description,
+    weatherOverview: weather,
+    directionsUrl,
+    latitude,
+    longitude,
+    contacts = {},
+    amenities = [],
+    campsites = [],
+    operatingHours = [],
+    images = [],
+  } = campData;
 
-      try {
-        const apiUrl = `https://developer.nps.gov/api/v1/campgrounds?api_key=${npsAPIKeys}&id=${qCampID}`;
-        const res = await axios.get(apiUrl);
-
-        if (res.status === 200 && res.data.data.length > 0) {
-          setCampData(res.data);
-        } else {
-          setError("Failed to fetch location");
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getCampInfo();
-  }, [qCampID]);
-
-  useEffect(() => {
-    if (campData && campData.data) {
-      const fetchedcamp = campData.data[0];
-      setBannerImage(fetchedcamp.images[0]?.url || defaultBanner);
-      setFullName(fetchedcamp.name);
-      setDescription(fetchedcamp.description);
-      setDirectionsUrl(fetchedcamp.directionsUrl);
-      setWeather(fetchedcamp.weatherOverview);
-      setEmails(fetchedcamp.contacts.emailAddresses);
-      setPhoneNumbers(fetchedcamp.contacts.phoneNumbers);
-      setAmenities(fetchedcamp.amenities);
-      setCampSites(fetchedcamp.campsites);
-      setOperatingHours(fetchedcamp.operatingHours);
-      setImages(fetchedcamp.images.slice(1));
-      setCords([fetchedcamp.latitude, fetchedcamp.longitude]);
-    }
-  }, [campData]);
+  const bannerImage = images[0]?.url || defaultBanner;
+  const cords = [latitude, longitude];
+  const emails = contacts.emailAddresses || [];
+  const phoneNumbers = contacts.phoneNumbers || [];
 
   return (
     <div className="camp-page page">
@@ -126,9 +105,7 @@ const Camp = () => {
         </div>
         <div className="amenities-container">
           <div className="image-container">
-            {images[0] && (
-              <img src={images[0].url} alt={images[0].altText} />
-            )}
+            {images[1] && <img src={images[1].url} alt={images[1].altText} />}
           </div>
           <div className="amenities-content">
             <h3>Amenities</h3>
@@ -159,9 +136,7 @@ const Camp = () => {
             </div>
           </div>
           <div className="image-container">
-            {images[1] && (
-              <img src={images[1].url} alt={images[1].altText} />
-            )}
+            {images[2] && <img src={images[2].url} alt={images[2].altText} />}
           </div>
         </div>
         <div className="contact-section">

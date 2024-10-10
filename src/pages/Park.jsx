@@ -1,77 +1,58 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import defaultBanner from "../assets/images/park-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
 
-const useQuery = () => {
+const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
 };
 
+const fetchParkInfo = async (parkCode) => {
+  if (!parkCode) throw new Error("Park code is required");
+  const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+  const res = await axios.get(
+    `https://developer.nps.gov/api/v1/parks?&api_key=${npsAPIKeys}&parkCode=${parkCode}`
+  );
+
+  if (res.status === 200 && res.data.data.length > 0) {
+    return res.data.data[0];
+  }
+  throw new Error("Failed to fetch park data");
+};
+
 const Park = () => {
-  const query = useQuery();
+  const query = useQueryParams();
   const qPCode = query.get("pCode");
-  const [parkData, setParkData] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  const [fullName, setFullName] = useState("");
-  const [description, setDescription] = useState("");
-  const [weather, setWeather] = useState("");
-  const [directionsUrl, setDirectionsUrl] = useState("");
-  const [cords, setCords] = useState([]);
-  const [emails, setEmails] = useState([]);
-  const [phoneNumbers, setPhoneNumbers] = useState([]);
-  const [activities, setActivities] = useState([]);
-  const [topics, setTopics] = useState([]);
-  const [operatingHours, setOperatingHours] = useState([]);
-  const [images, setImages] = useState([]);
-  const [bannerImage, setBannerImage] = useState(defaultBanner);
+  const { data: parkData, error, isLoading } = useQuery({
+    queryKey: ["parks", qPCode],
+    queryFn: () => fetchParkInfo(qPCode),
+    enabled: !!qPCode,
+  });
 
-  useEffect(() => {
-    const getParkInfo = async (parkCode) => {
-      if (!parkCode) return;
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-      setLoading(true);
-      const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
+  const {
+    fullName,
+    description,
+    weatherInfo: weather,
+    directionsUrl,
+    latitude,
+    longitude,
+    contacts = {},
+    activities = [],
+    topics = [],
+    operatingHours = [],
+    images = [],
+  } = parkData;
 
-      try {
-        const res = await axios.get(
-          `https://developer.nps.gov/api/v1/parks?&api_key=${npsAPIKeys}&parkCode=${parkCode}`
-        );
-
-        if (res.status === 200 && res.data.data.length > 0) {
-          setParkData(res.data);
-        } else {
-          setError("Failed to fetch location");
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getParkInfo(qPCode);
-  }, [qPCode]);
-
-  useEffect(() => {
-    if (parkData && parkData.data) {
-      const fetchedPark = parkData.data[0];
-      setBannerImage(fetchedPark.images[0]?.url || defaultBanner);
-      setFullName(fetchedPark.fullName);
-      setDescription(fetchedPark.description);
-      setDirectionsUrl(fetchedPark.directionsUrl);
-      setWeather(fetchedPark.weatherInfo);
-      setEmails(fetchedPark.contacts.emailAddresses);
-      setPhoneNumbers(fetchedPark.contacts.phoneNumbers);
-      setActivities(fetchedPark.activities);
-      setTopics(fetchedPark.topics);
-      setOperatingHours(fetchedPark.operatingHours);
-      setImages(fetchedPark.images.slice(1));
-      setCords([fetchedPark.latitude, fetchedPark.longitude]);
-    }
-  }, [parkData]);
+  const bannerImage = images[0]?.url || defaultBanner;
+  const cords = [latitude, longitude];
+  const emails = contacts.emailAddresses || [];
+  const phoneNumbers = contacts.phoneNumbers || [];
 
   return (
     <div className="park-page page">
@@ -120,16 +101,14 @@ const Park = () => {
         </div>
         <div className="activities-container">
           <div className="image-container">
-            {images[0] && (
-              <img src={images[0].url} alt={images[0].altText} />
-            )}
+            {images[0] && <img src={images[0].url} alt={images[0].altText} />}
           </div>
           <div className="activities-content">
             <h3>Activities</h3>
             <p className="subheading">Things To Do</p>
             <div className="content">
               <p>
-                {Array.isArray(activities) && activities.length > 0
+                {activities.length > 0
                   ? activities.map(activity => activity.name).join(", ")
                   : "Information not available"}
               </p>
@@ -142,16 +121,14 @@ const Park = () => {
             <p className="subheading">Things To Explore</p>
             <div className="content">
               <p>
-                {Array.isArray(topics) && topics.length > 0
+                {topics.length > 0
                   ? topics.map(topic => topic.name).join(", ")
                   : "Information not available"}
               </p>
             </div>
           </div>
           <div className="image-container">
-            {images[1] && (
-              <img src={images[1].url} alt={images[1].altText} />
-            )}
+            {images[1] && <img src={images[1].url} alt={images[1].altText} />}
           </div>
         </div>
         <div className="contact-section">

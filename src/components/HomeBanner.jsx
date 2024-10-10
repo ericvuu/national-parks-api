@@ -1,62 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import yosemiteImage from "../assets/images/banners/yosemite.jpg";
 import archesImage from "../assets/images/banners/arches.jpg";
 import glacierBayImage from "../assets/images/banners/glacier-bay.jpg";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
 
+const defaultParks = [
+  { name: "Yosemite", image: yosemiteImage, id: "yose" },
+  { name: "Arches National Park", image: archesImage, id: "arch" },
+  {name: "Glacier Bay National Park & Preserve", image: glacierBayImage,id: "glba",},
+];
+
+const fetchParks = async (stateCode, parksPerPage, apiKey) => {
+  const apiUrl = `https://developer.nps.gov/api/v1/parks?api_key=${apiKey}&stateCode=${stateCode}&limit=${parksPerPage}`;
+  const res = await axios.get(apiUrl);
+
+  if (!res.data.data) {
+    throw new Error("Parks not found");
+  }
+
+  return res.data.data.slice(0, parksPerPage).map((park) => ({
+    id: park.parkCode,
+    name: park.fullName,
+    image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
+  }));
+};
+
 const HomeBanner = ({ city, country, state, stateCode }) => {
   const parksPerPage = 3;
-  const defaultParks = [
-    { name: "Yosemite", image: yosemiteImage, id: "yose" },
-    { name: "Arches National Park", image: archesImage, id: "arch" },
-    {
-      name: "Glacier Bay National Park & Preserve",
-      image: glacierBayImage,
-      id: "glba",
-    },
-  ];
+  const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
 
-  const [parks, setParks] = useState(defaultParks);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchParks = async () => {
+  const {
+    data: parks = defaultParks,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["parks", stateCode],
+    queryFn: () => {
       if (!stateCode) {
-        setParks(defaultParks);
-        setLoading(false);
-        return;
+        return Promise.resolve(defaultParks);
       }
-
-      setLoading(true);
-      const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
-
-      try {
-        const apiUrl = `https://developer.nps.gov/api/v1/parks?api_key=${npsAPIKeys}&stateCode=${stateCode}&limit=${parksPerPage}`;
-        const res = await axios.get(apiUrl);
-
-        if (res.status === 200) {
-          const fetchedParks = res.data.data.slice(0, parksPerPage).map((park) => ({
-            id: park.parkCode,
-            name: park.fullName,
-            image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
-          }));
-          setParks(fetchedParks);
-        } else {
-          setParks(defaultParks);
-        }
-      } catch (err) {
-        setError(err.message);
-        setParks(defaultParks);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchParks();
-  }, [stateCode]);
+      return fetchParks(stateCode, parksPerPage, npsAPIKeys);
+    },
+    enabled: !!stateCode,
+  });
 
   return (
     <div className="home-banner">
@@ -66,7 +55,7 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
           <div className="banner-left">
             <p className="banner-subheading">Embrace the beauty</p>
             <h1 className="banner-heading">
-              {loading
+              {isLoading
                 ? `Fetching Parks in your State...`
                 : state && country === "United States"
                 ? `Explore the National Parks in ${state}`
@@ -77,13 +66,15 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
             </Link>
           </div>
           <div className="banner-right">
-            {loading ? (
+            {isLoading ? (
               <p>Loading parks...</p>
+            ) : error ? (
+              <p>Error fetching parks: {error.message}</p>
             ) : (
               parks.map((park, index) => (
                 <Link
                   to={`/park?pCode=${park.id}`}
-                  key={index}
+                  key={park.id}
                   className={`park-image park-image-${index + 1}`}
                   id={park.id}
                 >

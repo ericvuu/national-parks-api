@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIcon from "../assets/search-icon.svg";
 
-const Form = ({uPath, uState, uSearch}) => {
+const Form = ({uPath, uState, uSearch, onSearch}) => {
   const navigate = useNavigate();
   const [state, setState] = useState(uState || "");
   const [search, setSearch] = useState(uSearch || "");
@@ -22,6 +22,7 @@ const Form = ({uPath, uState, uSearch}) => {
 
   const handleSearchClick = (e) => {
     e.preventDefault();
+    onSearch();
     navigate(`/${uPath}?${state ? `&stateCode=${state}` : ''}${search ? `&q=${search}` : ''}`);
   };
 

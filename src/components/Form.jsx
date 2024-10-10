@@ -22,7 +22,9 @@ const Form = ({uPath, uState, uSearch, onSearch}) => {
 
   const handleSearchClick = (e) => {
     e.preventDefault();
-    onSearch();
+    if (onSearch){
+       onSearch();
+    }
     navigate(`/${uPath}?${state ? `&stateCode=${state}` : ''}${search ? `&q=${search}` : ''}`);
   };
 

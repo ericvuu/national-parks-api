@@ -1,9 +1,9 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import defaultBanner from "../assets/images/camp-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
+import {fetchCampInfo} from "../api/fetchCampInfo";
 
 const useURLQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -14,16 +14,6 @@ const formatCampValues = (value) => {
     return value.length > 0 ? value.join(", ") : "Not Available";
   }
   return value || "Not Available";
-};
-
-const fetchCampInfo = async (qCampID) => {
-  const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
-  const apiUrl = `https://developer.nps.gov/api/v1/campgrounds?api_key=${npsAPIKeys}&id=${qCampID}`;
-  const res = await axios.get(apiUrl);
-  if (res.status === 200 && res.data.data.length > 0) {
-    return res.data.data[0];
-  }
-  throw new Error("Failed to fetch location");
 };
 
 const Camp = () => {

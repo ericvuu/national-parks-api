@@ -6,30 +6,12 @@ import Form from "../components/Form";
 import Card from "../components/Card";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
 
-const useQueryParams = () => {
-  return new URLSearchParams(useLocation().search);
-};
-
-const fetchCamps = async ({ queryKey }) => {
-  const [_, stateCode, searchTerm, page, campsPerPage] = queryKey;
-  const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
-  const startCount = (page - 1) * campsPerPage + 1;
-
-  const apiUrl = `https://developer.nps.gov/api/v1/campgrounds?api_key=${npsAPIKeys}${stateCode ? `&stateCode=${stateCode}` : ""}${searchTerm ? `&q=${searchTerm}` : ""}&start=${startCount}&limit=${campsPerPage}`;
-
-  const res = await axios.get(apiUrl);
-  if (res.status !== 200) {
-    throw new Error("Failed to fetch camps");
-  }
-
-  return res.data;
-};
+import {fetchCamps} from "../api/fetchCamps";
+import useQueryParams from "../utilities/useQueryParams";
 
 const CampFinder = () => {
   const campsPerPage = 25;
-  const query = useQueryParams();
-  const qStateCode = query.get("stateCode");
-  const qSearchTerm = query.get("q");
+  const { qStateCode, qSearchTerm } = useQueryParams();
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data, error, isLoading } = useQuery({

@@ -1,25 +1,13 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import defaultBanner from "../assets/images/park-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
 
+import { fetchParkInfo } from "../api/fetchParkInfo";
+
 const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
-};
-
-const fetchParkInfo = async (parkCode) => {
-  if (!parkCode) throw new Error("Park code is required");
-  const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
-  const res = await axios.get(
-    `https://developer.nps.gov/api/v1/parks?&api_key=${npsAPIKeys}&parkCode=${parkCode}`
-  );
-
-  if (res.status === 200 && res.data.data.length > 0) {
-    return res.data.data[0];
-  }
-  throw new Error("Failed to fetch park data");
 };
 
 const Park = () => {

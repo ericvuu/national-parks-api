@@ -1,29 +1,46 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import Form from "../components/Form";
 import Card from "../components/Card";
+import notFoundImage from "../assets/images/banners/not-found.jpg";
 
 import {fetchParks} from "../api/fetchParks";
 import useQueryParams from "../utilities/useQueryParams";
+import useInfiniteScroll from "../utilities/useInfiniteScroll";
 
 const Explore = () => {
+  const queryClient = useQueryClient();
   const parksPerPage = 25;
-  const [currentPage, setCurrentPage] = useState(1);
   const { qActivity, qStateCode, qSearchTerm } = useQueryParams();
 
   const formattedActivity = qActivity ? qActivity.replace(/-/g, " ") : null;
 
-  const { data, error, isLoading } = useQuery({
-    queryKey: ['parks', qStateCode, qSearchTerm, currentPage, parksPerPage, formattedActivity],
-    queryFn: fetchParks,
-    keepPreviousData: true,
-  });
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["parks", qStateCode, qSearchTerm, parksPerPage, formattedActivity],
+    queryFn: ({ pageParam }) => fetchParks({ queryKey: ["parks", qStateCode, qSearchTerm, parksPerPage, formattedActivity], pageParam }),
+    getNextPageParam: (lastPage) => {
+    console.log(lastPage)
+    const totalparks = Number(lastPage.total);
+    const currentStart = Number(lastPage.start);
+    const currentPageCount = lastPage.parks.length;
+    const nextStart = currentStart + currentPageCount;
 
-  const totalPages = data ? Math.ceil(data.total / parksPerPage) : 1;
+    return currentPageCount < parksPerPage ? undefined : nextStart <= totalparks ? nextStart : undefined;
+  },
+ });
 
   const handleSearch = () => {
-    setCurrentPage(1);
+    queryClient.invalidateQueries(["parks", qStateCode, qSearchTerm, parksPerPage, formattedActivity]);
   };
+
+  useInfiniteScroll(fetchNextPage, hasNextPage, isFetchingNextPage);
 
   return (
     <div className="explore-page page">
@@ -39,46 +56,36 @@ const Explore = () => {
       </div>
       <div className="explore-form">
         <div className="explore-form-container">
-          <Form uPath={`explore`} uState={qStateCode} uSearch={qSearchTerm} onSearch={handleSearch}/>
+          <Form
+            uPath={`explore`}
+            uState={qStateCode}
+            uSearch={qSearchTerm}
+            onSearch={handleSearch}
+          />
         </div>
       </div>
       <div className="content-container container">
-        {isLoading ? (
-          <p className="status">Loading parks...</p>
+        {isFetching ? (
+          <p className="status">Loading...</p>
         ) : error ? (
           <p>Error: {error.message}</p>
-        ) : data.parks.length > 0 ? (
+        ) : data && data.pages[0].parks.length > 0 ? (
           <div className="gallery">
-            {data.parks.map((park) => (
-              <Card
-                key={park.parkID}
-                parkCode={park.parkCode}
-                title={park.name}
-                imageUrl={park.image}
-                parkUrl={`/park?pCode=${park.parkCode}`}
-              />
-            ))}
+            {data.pages.map((group, i) =>
+              group.parks.map((park) => (
+                <Card
+                  key={park.parkID}
+                  parkCode={park.parkCode}
+                  title={park.name}
+                  imageUrl={park.image}
+                  parkUrl={`/park?pCode=${park.parkCode}`}
+                />
+              ))
+            )}
           </div>
         ) : (
-          <p className="status">No parks available.</p>
+          <p className="status">No Camps Available</p>
         )}
-        <div className="pagination-controls">
-          <button
-            className="prev"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage <= 1}
-          >
-            Previous
-          </button>
-          <span>{`Page ${currentPage} of ${totalPages}`}</span>
-          <button
-            className="next"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage >= totalPages}
-          >
-            Next
-          </button>
-        </div>
       </div>
     </div>
   );

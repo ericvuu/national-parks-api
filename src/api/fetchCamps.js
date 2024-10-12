@@ -1,11 +1,11 @@
 import axios from "axios";
 
-export const fetchCamps = async ({ queryKey }) => {
-  const [_, stateCode, searchTerm, page, campsPerPage] = queryKey;
+export const fetchCamps = async ({ queryKey, pageParam = 1 }) => {
+  const [_, stateCode, searchTerm, campsPerPage] = queryKey;
   const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
-  const startCount = (page - 1) * campsPerPage + 1;
+  const startCount = pageParam;
 
-  const apiUrl = `https://developer.nps.gov/api/v1/campgrounds?api_key=${npsAPIKeys}${stateCode ? `&stateCode=${stateCode}` : ""}${searchTerm ? `&q=${searchTerm}` : ""}&start=${startCount}&limit=${campsPerPage}`;
+  const apiUrl = `https://developer.nps.gov/api/v1/campgrounds?api_key=${npsAPIKeys}${stateCode ? `&stateCode=${stateCode}` : ""}${searchTerm ? `&q=${searchTerm}` : ""}${startCount ? `&start=${startCount}` : ""}${campsPerPage? `&limit=${campsPerPage}` : ""}`;
 
   const res = await axios.get(apiUrl);
   if (res.status !== 200) {

@@ -1,12 +1,12 @@
 import axios from "axios";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
 
-export const fetchParks = async ({ queryKey }) => {
-  const [_, qStateCode, qSearchTerm, currentPage, parksPerPage, formattedActivity] = queryKey;
+export const fetchParks = async ({ queryKey, pageParam}) => {
+  const [_, qStateCode, qSearchTerm, parksPerPage, formattedActivity] = queryKey;
   const npsAPIKeys = import.meta.env.VITE_NPS_API_Keys;
-  const startCount = (currentPage - 1) * parksPerPage + 1;
+  const startCount = pageParam || 0;
 
-  const apiUrl = `https://developer.nps.gov/api/v1/parks?api_key=${npsAPIKeys}${qStateCode ? `&stateCode=${qStateCode}` : ''}${qSearchTerm ? `&q=${qSearchTerm}` : ''}${startCount ? `&start=${startCount}` : ''}&limit=${parksPerPage}`;
+  const apiUrl = `https://developer.nps.gov/api/v1/parks?api_key=${npsAPIKeys}${qStateCode ? `&stateCode=${qStateCode}` : ""}${qSearchTerm ? `&q=${qSearchTerm}` : ""}${startCount ? `&start=${startCount}` : ""}${parksPerPage ? `&limit=${parksPerPage}` : ""}`;
 
   const res = await axios.get(apiUrl);
 
@@ -16,11 +16,14 @@ export const fetchParks = async ({ queryKey }) => {
 
   let parksData = res.data.data;
 
-  if (formattedActivity) {
+  if (formattedActivity && typeof formattedActivity === "string") {
     parksData = parksData.filter((park) =>
-      park.activities.some((act) => act.name.toLowerCase() === formattedActivity.toLowerCase())
+      park.activities.some(
+        (act) => act.name.toLowerCase() === formattedActivity.toLowerCase()
+      )
     );
   }
+  console.log(res.data)
 
   return {
     parks: parksData.map((park) => ({
@@ -30,6 +33,7 @@ export const fetchParks = async ({ queryKey }) => {
       image: park.images && park.images[0] ? park.images[0].url : notFoundImage,
       url: park.url,
     })),
+    start: res.data.start,
     total: res.data.total,
   };
 };

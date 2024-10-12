@@ -15,16 +15,18 @@ const defaultParks = [
 
 const HomeBanner = ({ city, country, state, stateCode }) => {
   const parksPerPage = 3;
-  const currentPage = 1;
   const searchTerm = null;
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ["parks", stateCode, searchTerm, currentPage, parksPerPage],
-    queryFn: fetchParks,
+    queryKey: ["parks", stateCode, searchTerm, parksPerPage],
+    queryFn: ({ queryKey }) => {
+      const startCount = 1;
+      return fetchParks({ queryKey: queryKey, pageParam: startCount });
+    },
     keepPreviousData: true,
   });
 
-  const parks = data?.parks || defaultParks;
+  const parks = (data?.parks && data.parks.length > 2) ? data.parks : defaultParks;
 
   return (
     <div className="home-banner">

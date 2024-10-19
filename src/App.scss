@@ -41,6 +41,12 @@ body {
   width: 100%;
 }
 
+.status {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 @media (min-width: 576px) {
   .container {
     max-width: 540px;

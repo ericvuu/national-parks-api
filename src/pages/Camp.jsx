@@ -26,8 +26,8 @@ const Camp = () => {
     enabled: !!qCampID,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return <div className="status">Loading...</div>;
+  if (error) return <div className="status">Error: {error.message}</div>;
 
   const {
     name: fullName,

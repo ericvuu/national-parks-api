@@ -8,9 +8,9 @@ import glacierBayImage from "../assets/images/banners/glacier-bay.jpg";
 import { fetchParks } from "../api/fetchParks";
 
 const defaultParks = [
-  { name: "Yosemite", image: yosemiteImage, id: "yose" },
-  { name: "Arches National Park", image: archesImage, id: "arch" },
-  {name: "Glacier Bay National Park & Preserve", image: glacierBayImage,id: "glba",},
+  { name: "Yosemite", image: yosemiteImage, parkCode: "yose" },
+  { name: "Arches National Park", image: archesImage, parkCode: "arch" },
+  {name: "Glacier Bay National Park & Preserve", image: glacierBayImage, parkCode: "glba",},
 ];
 
 const HomeBanner = ({ city, country, state, stateCode }) => {

@@ -24,6 +24,7 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
       return fetchParks({ queryKey: queryKey, pageParam: startCount });
     },
     keepPreviousData: true,
+    enabled: !!state
   });
 
   const parks = (data?.parks && data.parks.length > 2) ? data.parks : defaultParks;

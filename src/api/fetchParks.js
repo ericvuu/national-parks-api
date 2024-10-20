@@ -23,7 +23,6 @@ export const fetchParks = async ({ queryKey, pageParam}) => {
       )
     );
   }
-  console.log(res.data)
 
   return {
     parks: parksData.map((park) => ({

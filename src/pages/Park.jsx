@@ -3,8 +3,10 @@ import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import defaultBanner from "../assets/images/park-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
-
 import { fetchParkInfo } from "../api/fetchParkInfo";
+import { fetchWeather } from "../api/fetchWeather";
+
+import Weather from "../components/Weather";
 
 const useQueryParams = () => {
   return new URLSearchParams(useLocation().search);
@@ -14,14 +16,15 @@ const Park = () => {
   const query = useQueryParams();
   const qPCode = query.get("pCode");
 
-  const { data: parkData, error, isLoading } = useQuery({
+  const {
+    data: parkData = {},
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ["parks", qPCode],
     queryFn: () => fetchParkInfo(qPCode),
     enabled: !!qPCode,
   });
-
-  if (isLoading) return <div className="status">Loading...</div>;
-  if (error) return <div className="status">Error: {error.message}</div>;
 
   const {
     fullName,
@@ -36,6 +39,45 @@ const Park = () => {
     operatingHours = [],
     images = [],
   } = parkData;
+
+
+  const qLatitude = latitude || 0;
+  const qLongitude = longitude || 0;
+
+  const {
+    data: weatherForecast = {},
+    error: wError,
+    isLoading: wIsLoading,
+  } = useQuery({
+    queryKey: ["weatherForecast", qLatitude, qLongitude],
+    queryFn: fetchWeather,
+    enabled: !!qLatitude && !!qLongitude,
+  });
+
+  if (!weatherForecast || !weatherForecast.daily) {
+    return null;
+  }
+
+  const {
+    daily: {
+      temperature_2m_max: maxTemps,
+      temperature_2m_min: minTemps,
+      time: days,
+      weathercode: weatherCodes,
+    },
+  } = weatherForecast;
+
+  const forecasts = days.map((day, index) => {
+    return {
+      day: day,
+      maxTemp: maxTemps[index],
+      minTemp: minTemps[index],
+      weatherCode: weatherCodes[index],
+    };
+  });
+
+  if (isLoading) return <div className="status">Loading...</div>;
+  if (error) return <div className="status">Error: {error.message}</div>;
 
   const bannerImage = images[0]?.url || defaultBanner;
   const cords = [latitude, longitude];
@@ -59,22 +101,39 @@ const Park = () => {
               <h3>{fullName}</h3>
               <p className="description">{description}</p>
               <p className="weather-info">{weather}</p>
-              <div className="get-directions">
-                <div className="content">
-                  {cords.length === 2 && (
-                    <p className="coordinates">
-                      {cords[0]}, {cords[1]}
-                    </p>
-                  )}
-                  {directionsUrl && (
-                    <a
-                      href={directionsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Get Directions
-                    </a>
-                  )}
+              <div className="plan-trip-info">
+                <div className="forecast-section">
+                  <div className="forecast">
+                    {forecasts.map((forecast, index) => {
+                      return (
+                        <Weather
+                          key={index}
+                          day={forecast.day}
+                          code={forecast.weatherCode}
+                          min={forecast.minTemp}
+                          max={forecast.maxTemp}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="get-directions">
+                  <div className="content">
+                    {cords.length === 2 && (
+                      <p className="coordinates">
+                        {cords[0]}, {cords[1]}
+                      </p>
+                    )}
+                    {directionsUrl && (
+                      <a
+                        href={directionsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Get Directions
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -97,7 +156,7 @@ const Park = () => {
             <div className="content">
               <p>
                 {activities.length > 0
-                  ? activities.map(activity => activity.name).join(", ")
+                  ? activities.map((activity) => activity.name).join(", ")
                   : "Information not available"}
               </p>
             </div>
@@ -110,7 +169,7 @@ const Park = () => {
             <div className="content">
               <p>
                 {topics.length > 0
-                  ? topics.map(topic => topic.name).join(", ")
+                  ? topics.map((topic) => topic.name).join(", ")
                   : "Information not available"}
               </p>
             </div>
@@ -147,7 +206,13 @@ const Park = () => {
                         {phone.type}:{" "}
                         <a href={`tel:${phone.phoneNumber}`}>
                           {phone.phoneNumber.length === 10
-                            ? `(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`
+                            ? `(${phone.phoneNumber.slice(
+                                0,
+                                3
+                              )}) ${phone.phoneNumber.slice(
+                                3,
+                                6
+                              )}-${phone.phoneNumber.slice(6)}`
                             : phone.phoneNumber}
                           {phone.extension ? ` ext: ${phone.extension}` : ""}
                         </a>
@@ -168,7 +233,10 @@ const Park = () => {
                         {Object.entries(park.standardHours).map(
                           ([day, hours], dayIndex) => (
                             <span key={dayIndex} className="hours-day">
-                              <span className="day">{`${day.charAt(0).toUpperCase() + day.slice(1)}`}</span>: {`${hours}`}
+                              <span className="day">{`${
+                                day.charAt(0).toUpperCase() + day.slice(1)
+                              }`}</span>
+                              : {`${hours}`}
                             </span>
                           )
                         )}

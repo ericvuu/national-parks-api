@@ -4,6 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import defaultBanner from "../assets/images/camp-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
 import {fetchCampInfo} from "../api/fetchCampInfo";
+import { fetchWeather } from "../api/fetchWeather";
+
+import Weather from "../components/Weather";
 
 const useURLQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -20,14 +23,11 @@ const Camp = () => {
   const query = useURLQuery();
   const qCampID = query.get("cID");
 
-  const { data: campData, error, isLoading } = useQuery({
+  const { data: campData = {}, error, isLoading } = useQuery({
     queryKey: ["campground", qCampID],
     queryFn: () => fetchCampInfo(qCampID),
     enabled: !!qCampID,
   });
-
-  if (isLoading) return <div className="status">Loading...</div>;
-  if (error) return <div className="status">Error: {error.message}</div>;
 
   const {
     name: fullName,
@@ -42,6 +42,44 @@ const Camp = () => {
     operatingHours = [],
     images = [],
   } = campData;
+
+  const qLatitude = latitude || 0;
+  const qLongitude = longitude || 0;
+
+  const {
+    data: weatherForecast = {},
+    error: wError,
+    isLoading: wIsLoading,
+  } = useQuery({
+    queryKey: ["weatherForecast", qLatitude, qLongitude],
+    queryFn: fetchWeather,
+    enabled: !!qLatitude && !!qLongitude,
+  });
+
+  if (!weatherForecast || !weatherForecast.daily) {
+    return null;
+  }
+
+  const {
+    daily: {
+      temperature_2m_max: maxTemps,
+      temperature_2m_min: minTemps,
+      time: days,
+      weathercode: weatherCodes,
+    },
+  } = weatherForecast;
+
+  const forecasts = days.map((day, index) => {
+    return {
+      day: day,
+      maxTemp: maxTemps[index],
+      minTemp: minTemps[index],
+      weatherCode: weatherCodes[index],
+    };
+  });
+
+  if (isLoading) return <div className="status">Loading...</div>;
+  if (error) return <div className="status">Error: {error.message}</div>;
 
   const bannerImage = images[0]?.url || defaultBanner;
   const cords = [latitude, longitude];
@@ -65,22 +103,39 @@ const Camp = () => {
               <h3>{fullName}</h3>
               <p className="description">{description}</p>
               <p className="weather-info">{weather}</p>
-              <div className="get-directions">
-                <div className="content">
-                  {cords.length === 2 && (
-                    <p className="coordinates">
-                      {cords[0]}, {cords[1]}
-                    </p>
-                  )}
-                  {directionsUrl && (
-                    <a
-                      href={directionsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Get Directions
-                    </a>
-                  )}
+              <div className="plan-trip-info">
+                <div className="forecast-section">
+                  <div className="forecast">
+                    {forecasts.map((forecast, index) => {
+                      return (
+                        <Weather
+                          key={index}
+                          day={forecast.day}
+                          code={forecast.weatherCode}
+                          min={forecast.minTemp}
+                          max={forecast.maxTemp}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="get-directions">
+                  <div className="content">
+                    {cords.length === 2 && (
+                      <p className="coordinates">
+                        {cords[0]}, {cords[1]}
+                      </p>
+                    )}
+                    {directionsUrl && (
+                      <a
+                        href={directionsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Get Directions
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -104,8 +159,12 @@ const Camp = () => {
               {Object.entries(amenities).map(([key, value]) => (
                 <p key={key}>
                   <strong>
-                    {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}:
-                  </strong> {formatCampValues(value)}
+                    {key
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}
+                    :
+                  </strong>{" "}
+                  {formatCampValues(value)}
                 </p>
               ))}
             </div>
@@ -119,8 +178,12 @@ const Camp = () => {
               {Object.entries(campsites).map(([key, value]) => (
                 <p key={key}>
                   <strong>
-                    {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}:
-                  </strong> {formatCampValues(value)}
+                    {key
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}
+                    :
+                  </strong>{" "}
+                  {formatCampValues(value)}
                 </p>
               ))}
             </div>
@@ -157,7 +220,13 @@ const Camp = () => {
                         {phone.type}:{" "}
                         <a href={`tel:${phone.phoneNumber}`}>
                           {phone.phoneNumber.length === 10
-                            ? `(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`
+                            ? `(${phone.phoneNumber.slice(
+                                0,
+                                3
+                              )}) ${phone.phoneNumber.slice(
+                                3,
+                                6
+                              )}-${phone.phoneNumber.slice(6)}`
                             : phone.phoneNumber}
                           {phone.extension ? ` ext: ${phone.extension}` : ""}
                         </a>
@@ -175,11 +244,16 @@ const Camp = () => {
                     )}
                     <div className="operating-hours">
                       <div className="hours-row">
-                        {Object.entries(camp.standardHours).map(([day, hours], dayIndex) => (
-                          <span key={dayIndex} className="hours-day">
-                            <span className="day">{`${day.charAt(0).toUpperCase() + day.slice(1)}`}</span>: {`${hours}`}
-                          </span>
-                        ))}
+                        {Object.entries(camp.standardHours).map(
+                          ([day, hours], dayIndex) => (
+                            <span key={dayIndex} className="hours-day">
+                              <span className="day">{`${
+                                day.charAt(0).toUpperCase() + day.slice(1)
+                              }`}</span>
+                              : {`${hours}`}
+                            </span>
+                          )
+                        )}
                       </div>
                     </div>
                   </div>

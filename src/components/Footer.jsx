@@ -26,6 +26,15 @@ const Footer = () => {
                 rel="noopener noreferrer"
               >
                 National Park Service API
+              </a>{" "}
+              and
+              <br />
+              <a
+                href="https://open-meteo.com/en/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open-Meteo API
               </a>
             </p>
           </div>

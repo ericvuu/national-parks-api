@@ -54,7 +54,7 @@
     position: relative;
     z-index: 1;
 
-    @media (min-width: 720px){
+    @media (min-width: 720px) {
       background-position: center center;
       background-attachment: fixed;
     }
@@ -152,14 +152,34 @@
           }
         }
 
+        .plan-trip-info {
+          display: flex;
+          align-items: flex-start;
+
+          .forecast-section {
+            width: 70%;
+
+            @media (max-width: 600px) {
+              flex-direction: column;
+              width: 100%;
+            }
+          }
+
+          @media (max-width: 600px) {
+            flex-direction: column;
+            width: 100%;
+          }
+        }
+
         .get-directions {
-          margin-top: 2rem;
           display: flex;
           justify-content: flex-end;
           align-items: center;
+          margin-top: 2rem;
 
           .coordinates {
             margin-bottom: 5px;
+            font-size: 1rem;
           }
 
           a {
@@ -177,7 +197,7 @@
 
       .map {
         width: 50%;
-        margin-top: -6.5rem;
+        margin-top: -15.5rem;
 
         @media (max-width: 1200px) {
           margin-top: 25px;

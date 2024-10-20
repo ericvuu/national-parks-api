@@ -1,0 +1,36 @@
+.forecast-section {
+  width: 100%;
+  padding-top: 2rem;
+
+  .forecast {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1rem;
+
+    .weather {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 120px;
+
+      .daily-stats {
+        display: flex;
+        align-items: center;
+      }
+
+      .temp-range {
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .weather-icon {
+        width: 100%;
+        width: 75px;
+        height: auto;
+      }
+    }
+  }
+}

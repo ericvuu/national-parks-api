@@ -10,7 +10,7 @@ import useInfiniteScroll from "../utilities/useInfiniteScroll";
 
 const CampFinder = () => {
   const queryClient = useQueryClient();
-  const campsPerPage = 25;
+  const campsPerPage = 9;
   const { qStateCode, qSearchTerm } = useQueryParams();
 
   const {

@@ -10,7 +10,7 @@ import useInfiniteScroll from "../utilities/useInfiniteScroll";
 
 const Explore = () => {
   const queryClient = useQueryClient();
-  const parksPerPage = 25;
+  const parksPerPage = 9;
   const { qActivity, qStateCode, qSearchTerm } = useQueryParams();
 
   const formattedActivity = qActivity ? qActivity.replace(/-/g, " ") : null;
@@ -26,7 +26,6 @@ const Explore = () => {
     queryKey: ["parks", qStateCode, qSearchTerm, parksPerPage, formattedActivity],
     queryFn: ({ pageParam }) => fetchParks({ queryKey: ["parks", qStateCode, qSearchTerm, parksPerPage, formattedActivity], pageParam }),
     getNextPageParam: (lastPage) => {
-    console.log(lastPage)
     const totalparks = Number(lastPage.total);
     const currentStart = Number(lastPage.start);
     const currentPageCount = lastPage.parks.length;

@@ -43,7 +43,7 @@ const HomeBanner = ({ city, country, state, stateCode }) => {
                 ? `Explore the National Parks in ${state}`
                 : "Explore America's National Parks"}
             </h1>
-            <Link to={`/explore?stateCode=${stateCode}`} className="btn btn-lg np-explore-btn">
+            <Link to={stateCode ? `/explore?stateCode=${stateCode}` : '/explore'} className="btn btn-lg np-explore-btn">
               Explore Parks
             </Link>
           </div>

@@ -83,7 +83,7 @@ const Explore = () => {
             )}
           </div>
         ) : (
-          <p className="status">No Camps Available</p>
+          <p className="status">No Parks Available</p>
         )}
       </div>
     </div>

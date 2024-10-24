@@ -148,7 +148,11 @@ const Park = () => {
         </div>
         <div className="activities-container">
           <div className="image-container">
-            {images[0] && <img src={images[0].url} alt={images[0].altText} />}
+            {images[1] ? (
+              <img src={images[1].url} alt={images[1].altText} />
+            ) : (
+              <img src={images[0].url} alt={images[0].altText} />
+            )}
           </div>
           <div className="activities-content">
             <h3>Activities</h3>
@@ -175,7 +179,11 @@ const Park = () => {
             </div>
           </div>
           <div className="image-container">
-            {images[1] && <img src={images[1].url} alt={images[1].altText} />}
+            {images[2] ? (
+              <img src={images[2].url} alt={images[2].altText} />
+            ) : (
+              <img src={images[0].url} alt={images[0].altText} />
+            )}
           </div>
         </div>
         <div className="contact-section">

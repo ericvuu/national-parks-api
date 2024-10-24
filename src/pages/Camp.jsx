@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import defaultBanner from "../assets/images/camp-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
-import {fetchCampInfo} from "../api/fetchCampInfo";
+import { fetchCampInfo } from "../api/fetchCampInfo";
 import { fetchWeather } from "../api/fetchWeather";
 
 import Weather from "../components/Weather";
@@ -23,7 +23,11 @@ const Camp = () => {
   const query = useURLQuery();
   const qCampID = query.get("cID");
 
-  const { data: campData = {}, error, isLoading } = useQuery({
+  const {
+    data: campData = {},
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ["campground", qCampID],
     queryFn: () => fetchCampInfo(qCampID),
     enabled: !!qCampID,
@@ -150,7 +154,11 @@ const Camp = () => {
         </div>
         <div className="amenities-container">
           <div className="image-container">
-            {images[1] && <img src={images[1].url} alt={images[1].altText} />}
+            {images[1] ? (
+              <img src={images[1].url} alt={images[1].altText} />
+            ) : (
+              <img src={images[0].url} alt={images[0].altText} />
+            )}
           </div>
           <div className="amenities-content">
             <h3>Amenities</h3>
@@ -189,7 +197,11 @@ const Camp = () => {
             </div>
           </div>
           <div className="image-container">
-            {images[2] && <img src={images[2].url} alt={images[2].altText} />}
+            {images[2] ? (
+              <img src={images[2].url} alt={images[2].altText} />
+            ) : (
+              <img src={images[0].url} alt={images[0].altText} />
+            )}
           </div>
         </div>
         <div className="contact-section">

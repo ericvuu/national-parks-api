@@ -221,6 +221,11 @@
           margin-top: 15px;
         }
 
+         @media (max-width: 600px) {
+          width: 98%;
+          margin: auto;
+        }
+
         .leaflet-container {
           position: relative;
           min-height: 550px !important;
@@ -401,6 +406,10 @@
     padding: 4rem 2rem;
     background-color: $dk-accent;
 
+     @media (max-width: 600px) {
+        padding: 0;
+      }
+
     .card-container {
       position: relative;
       width: 90%;
@@ -419,7 +428,8 @@
       }
 
       @media (max-width: 600px) {
-        width: 98%;
+        width: 100%;
+        border-radius: 0;
       }
 
       @media (max-width: 480px) {
@@ -440,6 +450,10 @@
       h3 {
         font-size: 3rem;
         margin-bottom: 2rem;
+
+         @media (max-width: 600px) {
+          text-align: left;
+        }
       }
 
       .text-content {
@@ -471,7 +485,6 @@
 
           @media (max-width: 1080px) {
             width: 100%;
-            text-align: center;
           }
 
           .email-info:not(:last-child),

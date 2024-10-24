@@ -160,6 +160,10 @@
           .forecast-section {
             width: 70%;
 
+            @media (min-width: 1800px) {
+              width: 90%;
+            }
+
             @media (max-width: 1600px) {
               width: 80%;
             }

@@ -54,27 +54,27 @@ const Park = () => {
     enabled: !!qLatitude && !!qLongitude,
   });
 
-  if (!weatherForecast || !weatherForecast.daily) {
-    return null;
+
+  let forecasts = [];
+  if (weatherForecast && weatherForecast.daily) {
+    const {
+      daily: {
+        temperature_2m_max: maxTemps,
+        temperature_2m_min: minTemps,
+        time: days,
+        weathercode: weatherCodes,
+      },
+    } = weatherForecast;
+
+    forecasts = days.map((day, index) => {
+      return {
+        day: day,
+        maxTemp: maxTemps[index],
+        minTemp: minTemps[index],
+        weatherCode: weatherCodes[index],
+      };
+    });
   }
-
-  const {
-    daily: {
-      temperature_2m_max: maxTemps,
-      temperature_2m_min: minTemps,
-      time: days,
-      weathercode: weatherCodes,
-    },
-  } = weatherForecast;
-
-  const forecasts = days.map((day, index) => {
-    return {
-      day: day,
-      maxTemp: maxTemps[index],
-      minTemp: minTemps[index],
-      weatherCode: weatherCodes[index],
-    };
-  });
 
   if (isLoading) return <div className="status">Loading...</div>;
   if (error) return <div className="status">Error: {error.message}</div>;
@@ -104,17 +104,23 @@ const Park = () => {
               <div className="plan-trip-info">
                 <div className="forecast-section">
                   <div className="forecast">
-                    {forecasts.map((forecast, index) => {
-                      return (
-                        <Weather
-                          key={index}
-                          day={forecast.day}
-                          code={forecast.weatherCode}
-                          min={forecast.minTemp}
-                          max={forecast.maxTemp}
-                        />
-                      );
-                    })}
+                    {forecasts.length > 0 && (
+                      <div className="forecast-section">
+                        <div className="forecast">
+                          {forecasts.map((forecast, index) => {
+                            return (
+                              <Weather
+                                key={index}
+                                day={forecast.day}
+                                code={forecast.weatherCode}
+                                min={forecast.minTemp}
+                                max={forecast.maxTemp}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="get-directions">
@@ -148,10 +154,14 @@ const Park = () => {
         </div>
         <div className="activities-container">
           <div className="image-container">
-            {images[1] ? (
-              <img src={images[1].url} alt={images[1].altText} />
+            {images && images.length > 0 ? (
+              images[1] ? (
+                <img src={images[1].url} alt={images[1].altText || "Image"} />
+              ) : (
+                <img src={images[0].url} alt={images[0].altText || "Image"} />
+              )
             ) : (
-              <img src={images[0].url} alt={images[0].altText} />
+              <img src={defaultBanner} alt="No Image Available" />
             )}
           </div>
           <div className="activities-content">
@@ -179,10 +189,14 @@ const Park = () => {
             </div>
           </div>
           <div className="image-container">
-            {images[2] ? (
-              <img src={images[2].url} alt={images[2].altText} />
+            {images && images.length > 0 ? (
+              images[2] ? (
+                <img src={images[2].url} alt={images[2].altText || "Image"} />
+              ) : (
+                <img src={images[0].url} alt={images[0].altText || "Image"} />
+              )
             ) : (
-              <img src={images[0].url} alt={images[0].altText} />
+              <img src={defaultBanner} alt="No Image Available" />
             )}
           </div>
         </div>

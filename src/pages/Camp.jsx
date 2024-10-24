@@ -5,7 +5,6 @@ import defaultBanner from "../assets/images/camp-banner.jpg";
 import LeafletMap from "../components/LeafletMap";
 import { fetchCampInfo } from "../api/fetchCampInfo";
 import { fetchWeather } from "../api/fetchWeather";
-
 import Weather from "../components/Weather";
 
 const useURLQuery = () => {
@@ -47,8 +46,8 @@ const Camp = () => {
     images = [],
   } = campData;
 
-  const qLatitude = latitude || 0;
-  const qLongitude = longitude || 0;
+  const qLatitude = latitude && latitude !== "" ? latitude : null;
+  const qLongitude = longitude && longitude !== "" ? longitude : null;
 
   const {
     data: weatherForecast = {},
@@ -57,33 +56,32 @@ const Camp = () => {
   } = useQuery({
     queryKey: ["weatherForecast", qLatitude, qLongitude],
     queryFn: fetchWeather,
-    enabled: !!qLatitude && !!qLongitude,
-  });
-
-  if (!weatherForecast || !weatherForecast.daily) {
-    return null;
-  }
-
-  const {
-    daily: {
-      temperature_2m_max: maxTemps,
-      temperature_2m_min: minTemps,
-      time: days,
-      weathercode: weatherCodes,
-    },
-  } = weatherForecast;
-
-  const forecasts = days.map((day, index) => {
-    return {
-      day: day,
-      maxTemp: maxTemps[index],
-      minTemp: minTemps[index],
-      weatherCode: weatherCodes[index],
-    };
+    enabled: qLatitude !== null && qLongitude !== null,
   });
 
   if (isLoading) return <div className="status">Loading...</div>;
   if (error) return <div className="status">Error: {error.message}</div>;
+
+  let forecasts = [];
+  if (weatherForecast && weatherForecast.daily) {
+    const {
+      daily: {
+        temperature_2m_max: maxTemps,
+        temperature_2m_min: minTemps,
+        time: days,
+        weathercode: weatherCodes,
+      },
+    } = weatherForecast;
+
+    forecasts = days.map((day, index) => {
+      return {
+        day: day,
+        maxTemp: maxTemps[index],
+        minTemp: minTemps[index],
+        weatherCode: weatherCodes[index],
+      };
+    });
+  }
 
   const bannerImage = images[0]?.url || defaultBanner;
   const cords = [latitude, longitude];
@@ -108,21 +106,23 @@ const Camp = () => {
               <p className="description">{description}</p>
               <p className="weather-info">{weather}</p>
               <div className="plan-trip-info">
-                <div className="forecast-section">
-                  <div className="forecast">
-                    {forecasts.map((forecast, index) => {
-                      return (
-                        <Weather
-                          key={index}
-                          day={forecast.day}
-                          code={forecast.weatherCode}
-                          min={forecast.minTemp}
-                          max={forecast.maxTemp}
-                        />
-                      );
-                    })}
+                {forecasts.length > 0 && (
+                  <div className="forecast-section">
+                    <div className="forecast">
+                      {forecasts.map((forecast, index) => {
+                        return (
+                          <Weather
+                            key={index}
+                            day={forecast.day}
+                            code={forecast.weatherCode}
+                            min={forecast.minTemp}
+                            max={forecast.maxTemp}
+                          />
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="get-directions">
                   <div className="content">
                     {cords.length === 2 && (
@@ -154,10 +154,14 @@ const Camp = () => {
         </div>
         <div className="amenities-container">
           <div className="image-container">
-            {images[1] ? (
-              <img src={images[1].url} alt={images[1].altText} />
+            {images && images.length > 0 ? (
+              images[1] ? (
+                <img src={images[1].url} alt={images[1].altText || "Image"} />
+              ) : (
+                <img src={images[0].url} alt={images[0].altText || "Image"} />
+              )
             ) : (
-              <img src={images[0].url} alt={images[0].altText} />
+              <img src={defaultBanner} alt="No Image Available" />
             )}
           </div>
           <div className="amenities-content">
@@ -197,10 +201,14 @@ const Camp = () => {
             </div>
           </div>
           <div className="image-container">
-            {images[2] ? (
-              <img src={images[2].url} alt={images[2].altText} />
+            {images && images.length > 0 ? (
+              images[2] ? (
+                <img src={images[2].url} alt={images[2].altText || "Image"} />
+              ) : (
+                <img src={images[0].url} alt={images[0].altText || "Image"} />
+              )
             ) : (
-              <img src={images[0].url} alt={images[0].altText} />
+              <img src={defaultBanner} alt="No Image Available" />
             )}
           </div>
         </div>

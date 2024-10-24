@@ -160,6 +160,10 @@
           .forecast-section {
             width: 70%;
 
+            @media (max-width: 1600px) {
+              width: 80%;
+            }
+
             @media (max-width: 600px) {
               flex-direction: column;
               width: 100%;
@@ -175,6 +179,7 @@
         .get-directions {
           margin-top: 2rem;
           text-align: right;
+          width: 20%;
 
            @media (max-width: 600px) {
              text-align: left;
@@ -190,6 +195,10 @@
             color: $primary;
             font-size: 1.3rem;
             font-weight: 700;
+
+            @media (max-width: 1600px) {
+              font-size: 1rem;
+            }
 
             @media (max-width: 768px) {
               font-size: 1.1rem;

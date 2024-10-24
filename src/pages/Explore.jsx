@@ -28,10 +28,10 @@ const Explore = () => {
     getNextPageParam: (lastPage) => {
     const totalparks = Number(lastPage.total);
     const currentStart = Number(lastPage.start);
-    const currentPageCount = lastPage.parks.length;
+    const currentPageCount = lastPage.batch;
     const nextStart = currentStart + currentPageCount;
 
-    return currentPageCount < parksPerPage ? undefined : nextStart <= totalparks ? nextStart : undefined;
+    return nextStart < totalparks ? nextStart : undefined;
   },
  });
 

@@ -15,6 +15,7 @@ export const fetchParks = async ({ queryKey, pageParam}) => {
   }
 
   let parksData = res.data.data;
+  let parksBatchCount = parksData.length;
 
   if (formattedActivity && typeof formattedActivity === "string") {
     parksData = parksData.filter((park) =>
@@ -34,5 +35,6 @@ export const fetchParks = async ({ queryKey, pageParam}) => {
     })),
     start: res.data.start,
     total: res.data.total,
+    batch: parksBatchCount
   };
 };

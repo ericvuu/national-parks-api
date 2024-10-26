@@ -3,8 +3,7 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import Form from "../components/Form";
 import Card from "../components/Card";
 import notFoundImage from "../assets/images/banners/not-found.jpg";
-
-import {fetchCamps} from "../api/fetchCamps";
+import { fetchCamps } from "../api/fetchCamps";
 import useQueryParams from "../utilities/useQueryParams";
 import useInfiniteScroll from "../utilities/useInfiniteScroll";
 
@@ -22,25 +21,28 @@ const CampFinder = () => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["camps", qStateCode, qSearchTerm, campsPerPage],
-    queryFn: ({ pageParam }) => fetchCamps({ queryKey: ["camps", qStateCode, qSearchTerm, campsPerPage], pageParam }),
+    queryFn: ({ pageParam }) =>
+      fetchCamps({
+        queryKey: ["camps", qStateCode, qSearchTerm, campsPerPage],
+        pageParam,
+      }),
     getNextPageParam: (lastPage) => {
+      const totalCamps = Number(lastPage.total);
+      const currentStart = Number(lastPage.start);
+      const currentPageCount = lastPage.data.length;
+      const nextStart = currentStart + currentPageCount;
 
-    const totalCamps = Number(lastPage.total);
-    const currentStart = Number(lastPage.start);
-    const currentPageCount = lastPage.data.length;
-
-    const nextStart = currentStart + currentPageCount;
-
-    if (currentPageCount < campsPerPage) {
-      return undefined;
-    }
-
-    return nextStart <= totalCamps ? nextStart : undefined;
-  },
- });
+      return currentPageCount < campsPerPage || nextStart > totalCamps ? undefined : nextStart;
+    },
+  });
 
   const handleSearch = () => {
-    queryClient.invalidateQueries(["camps", qStateCode, qSearchTerm, campsPerPage]);
+    queryClient.invalidateQueries([
+      "camps",
+      qStateCode,
+      qSearchTerm,
+      campsPerPage,
+    ]);
   };
 
   useInfiniteScroll(fetchNextPage, hasNextPage, isFetchingNextPage);
@@ -58,10 +60,11 @@ const CampFinder = () => {
           </p>
         </div>
       </div>
+
       <div className="campgrounds-form">
         <div className="campgrounds-form-container">
           <Form
-            uPath={`campgrounds`}
+            uPath="campgrounds"
             uState={qStateCode}
             uSearch={qSearchTerm}
             onSearch={handleSearch}
@@ -69,11 +72,9 @@ const CampFinder = () => {
         </div>
       </div>
       <div className="content-container container">
-        {isFetching ? (
-          <p className="status">Loading...</p>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : data && data.pages[0].data.length > 0 ? (
+        {error ? (
+          <p className="status">Error: {error.message}</p>
+        ) : data && data.pages.length > 0 ? (
           <div className="gallery">
             {data.pages.map((group, i) =>
               group.data.map((camp) => (
@@ -81,8 +82,7 @@ const CampFinder = () => {
                   id={camp.id}
                   key={camp.id}
                   title={camp.name}
-                  imageUrl={
-                    camp.images && camp.images[0]
+                  imageUrl={camp.images && camp.images[0]
                       ? camp.images[0].url
                       : notFoundImage
                   }
@@ -90,6 +90,7 @@ const CampFinder = () => {
                 />
               ))
             )}
+            {isFetchingNextPage && <p className="status">Loading more...</p>}
           </div>
         ) : (
           <p className="status">No Camps Available</p>

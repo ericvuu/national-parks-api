@@ -49,8 +49,9 @@ const Explore = () => {
         <div className="banner-content">
           <h1 className="banner-heading">Explore</h1>
           <p>
-            Welcome to National Parks, your ultimate guide to exploring America's most beautiful natural treasures.
-            We believe in the power of nature to inspire and connect us all.
+            Welcome to National Parks, your ultimate guide to exploring
+            America's most beautiful natural treasures. We believe in the power
+            of nature to inspire and connect us all.
           </p>
         </div>
       </div>
@@ -66,8 +67,8 @@ const Explore = () => {
       </div>
       <div className="content-container container">
         {error ? (
-          <p>Error: {error.message}</p>
-        ) : (
+          <p className="status">Error: {error.message}</p>
+        ) : data && data.pages.length > 0 ? (
           <div className="gallery">
             {data?.pages.map((group, i) =>
               group.parks.map((park) => (
@@ -80,10 +81,9 @@ const Explore = () => {
                 />
               ))
             )}
+            {isFetchingNextPage && <p className="status">Loading more...</p>}
           </div>
-        )}
-        {isFetchingNextPage && <p className="status">Loading more...</p>}
-        {!isFetching && data && data.pages[0].parks.length === 0 && (
+        ) : (
           <p className="status">No Parks Available</p>
         )}
       </div>

@@ -54,6 +54,11 @@
     position: relative;
     z-index: 1;
 
+    @media (max-width: 1200px) {
+      padding: 0;
+      height: 50vh;
+    }
+
     @media (min-width: 720px) {
       background-position: center center;
       background-attachment: fixed;

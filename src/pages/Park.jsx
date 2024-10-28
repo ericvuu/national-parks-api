@@ -28,6 +28,7 @@ const Park = () => {
 
   const {
     fullName,
+    designation,
     description,
     weatherInfo: weather,
     directionsUrl,
@@ -91,6 +92,7 @@ const Park = () => {
       >
         <div className="banner-content">
           <h1 className="banner-heading">{fullName}</h1>
+          <p className="designation">{designation}</p>
         </div>
       </div>
 
@@ -98,9 +100,13 @@ const Park = () => {
         <div className="overview-container">
           <div className="info-block">
             <div className="text-wrap">
-              <h3>{fullName}</h3>
-              <p className="description">{description}</p>
-              <p className="weather-info">{weather}</p>
+              <h3>Overview</h3>
+              <p className="description">
+                {description || "No description available."}
+              </p>
+              <p className="weather-info">
+                {weather || "No weather information available."}
+              </p>
 
               <div className="plan-trip-info">
                 <div className="forecast-section">
@@ -157,9 +163,15 @@ const Park = () => {
         <div className="activities-container">
           <div className="image-container">
             {images.length > 1 ? (
-              <img src={images[1]?.url || defaultBanner} alt={images[1]?.altText || "Image"} />
+              <img
+                src={images[1]?.url || defaultBanner}
+                alt={images[1]?.altText || "Image"}
+              />
             ) : (
-              <img src={images[0]?.url || defaultBanner} alt={images[0]?.altText || "Image"} />
+              <img
+                src={images[0]?.url || defaultBanner}
+                alt={images[0]?.altText || "Image"}
+              />
             )}
           </div>
           <div className="activities-content">
@@ -189,9 +201,15 @@ const Park = () => {
           </div>
           <div className="image-container">
             {images.length > 2 ? (
-              <img src={images[2]?.url || defaultBanner} alt={images[2]?.altText || "Image"} />
+              <img
+                src={images[2]?.url || defaultBanner}
+                alt={images[2]?.altText || "Image"}
+              />
             ) : (
-              <img src={images[0]?.url || defaultBanner} alt={images[0]?.altText || "Image"} />
+              <img
+                src={images[0]?.url || defaultBanner}
+                alt={images[0]?.altText || "Image"}
+              />
             )}
           </div>
         </div>

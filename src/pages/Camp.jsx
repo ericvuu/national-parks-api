@@ -98,7 +98,7 @@ const Camp = () => {
         <div className="overview-container">
           <div className="info-block">
             <div className="text-wrap">
-              <h3>{fullName}</h3>
+              <h3>Overview</h3>
               <p className="description">{description || "No description available."}</p>
               <p className="weather-info">{weather || "No weather information available."}</p>
                <div className="plan-trip-info">

@@ -19,7 +19,7 @@ const Park = () => {
   const {
     data: parkData = {},
     error,
-    isLoading,
+    isLoading: isParkLoading,
   } = useQuery({
     queryKey: ["parks", qPCode],
     queryFn: () => fetchParkInfo(qPCode),
@@ -40,20 +40,18 @@ const Park = () => {
     images = [],
   } = parkData;
 
-
   const qLatitude = latitude || 0;
   const qLongitude = longitude || 0;
 
   const {
     data: weatherForecast = {},
     error: wError,
-    isLoading: wIsLoading,
+    isLoading: isWeatherLoading,
   } = useQuery({
     queryKey: ["weatherForecast", qLatitude, qLongitude],
     queryFn: fetchWeather,
     enabled: !!qLatitude && !!qLongitude,
   });
-
 
   let forecasts = [];
   if (weatherForecast && weatherForecast.daily) {
@@ -76,7 +74,8 @@ const Park = () => {
     });
   }
 
-  if (isLoading) return <div className="status">Loading...</div>;
+
+  if (isParkLoading) return <div className="status">Loading park information...</div>;
   if (error) return <div className="status">Error: {error.message}</div>;
 
   const bannerImage = images[0]?.url || defaultBanner;
@@ -94,6 +93,7 @@ const Park = () => {
           <h1 className="banner-heading">{fullName}</h1>
         </div>
       </div>
+
       <div className="single-park-overview">
         <div className="overview-container">
           <div className="info-block">
@@ -101,28 +101,28 @@ const Park = () => {
               <h3>{fullName}</h3>
               <p className="description">{description}</p>
               <p className="weather-info">{weather}</p>
+
               <div className="plan-trip-info">
                 <div className="forecast-section">
-                  <div className="forecast">
-                    {forecasts.length > 0 && (
-                      <div className="forecast-section">
-                        <div className="forecast">
-                          {forecasts.map((forecast, index) => {
-                            return (
-                              <Weather
-                                key={index}
-                                day={forecast.day}
-                                code={forecast.weatherCode}
-                                min={forecast.minTemp}
-                                max={forecast.maxTemp}
-                              />
-                            );
-                          })}
-                        </div>
+                  {isWeatherLoading ? (
+                    <p>Loading weather information...</p>
+                  ) : (
+                    forecasts.length > 0 && (
+                      <div className="forecast">
+                        {forecasts.map((forecast, index) => (
+                          <Weather
+                            key={index}
+                            day={forecast.day}
+                            code={forecast.weatherCode}
+                            min={forecast.minTemp}
+                            max={forecast.maxTemp}
+                          />
+                        ))}
                       </div>
-                    )}
-                  </div>
+                    )
+                  )}
                 </div>
+
                 <div className="get-directions">
                   <div className="content">
                     {cords.length === 2 && (
@@ -144,24 +144,22 @@ const Park = () => {
               </div>
             </div>
           </div>
+
           <div className="map">
-            {cords.length === 2 ? (
-              <LeafletMap position={cords} park={fullName} />
+            {latitude && longitude ? (
+              <LeafletMap position={[latitude, longitude]} park={fullName} />
             ) : (
               <div>Coordinates not available.</div>
             )}
           </div>
         </div>
+
         <div className="activities-container">
           <div className="image-container">
-            {images && images.length > 0 ? (
-              images[1] ? (
-                <img src={images[1].url} alt={images[1].altText || "Image"} />
-              ) : (
-                <img src={images[0].url} alt={images[0].altText || "Image"} />
-              )
+            {images.length > 1 ? (
+              <img src={images[1]?.url || defaultBanner} alt={images[1]?.altText || "Image"} />
             ) : (
-              <img src={defaultBanner} alt="No Image Available" />
+              <img src={images[0]?.url || defaultBanner} alt={images[0]?.altText || "Image"} />
             )}
           </div>
           <div className="activities-content">
@@ -176,6 +174,7 @@ const Park = () => {
             </div>
           </div>
         </div>
+
         <div className="topics-container">
           <div className="topics-content">
             <h3>Topics</h3>
@@ -189,17 +188,14 @@ const Park = () => {
             </div>
           </div>
           <div className="image-container">
-            {images && images.length > 0 ? (
-              images[2] ? (
-                <img src={images[2].url} alt={images[2].altText || "Image"} />
-              ) : (
-                <img src={images[0].url} alt={images[0].altText || "Image"} />
-              )
+            {images.length > 2 ? (
+              <img src={images[2]?.url || defaultBanner} alt={images[2]?.altText || "Image"} />
             ) : (
-              <img src={defaultBanner} alt="No Image Available" />
+              <img src={images[0]?.url || defaultBanner} alt={images[0]?.altText || "Image"} />
             )}
           </div>
         </div>
+
         <div className="contact-section">
           <div className="card-container">
             <h3>Contact</h3>
@@ -220,6 +216,7 @@ const Park = () => {
                     </div>
                   ))}
                 </div>
+
                 <div className="phone-block">
                   <h4>Phone</h4>
                   {phoneNumbers.map((phone, index) => (
@@ -243,6 +240,7 @@ const Park = () => {
                   ))}
                 </div>
               </div>
+
               <div className="right-block">
                 {operatingHours.map((park, index) => (
                   <div key={index} className="park-info">

@@ -46,24 +46,24 @@ const Camp = () => {
     images = [],
   } = campData;
 
-  const qLatitude = latitude && latitude !== "" ? latitude : null;
-  const qLongitude = longitude && longitude !== "" ? longitude : null;
+  const qLatitude = latitude || null;
+  const qLongitude = longitude || null;
 
   const {
     data: weatherForecast = {},
     error: wError,
-    isLoading: wIsLoading,
+    isLoading: isWeatherLoading,
   } = useQuery({
     queryKey: ["weatherForecast", qLatitude, qLongitude],
     queryFn: fetchWeather,
     enabled: qLatitude !== null && qLongitude !== null,
   });
 
-  if (isLoading) return <div className="status">Loading...</div>;
+  if (isLoading) return <div className="status">Loading campground information...</div>;
   if (error) return <div className="status">Error: {error.message}</div>;
 
   let forecasts = [];
-  if (weatherForecast && weatherForecast.daily) {
+  if (weatherForecast?.daily) {
     const {
       daily: {
         temperature_2m_max: maxTemps,
@@ -73,14 +73,12 @@ const Camp = () => {
       },
     } = weatherForecast;
 
-    forecasts = days.map((day, index) => {
-      return {
-        day: day,
-        maxTemp: maxTemps[index],
-        minTemp: minTemps[index],
-        weatherCode: weatherCodes[index],
-      };
-    });
+    forecasts = days.map((day, index) => ({
+      day: day,
+      maxTemp: maxTemps[index],
+      minTemp: minTemps[index],
+      weatherCode: weatherCodes[index],
+    }));
   }
 
   const bannerImage = images[0]?.url || defaultBanner;
@@ -90,27 +88,27 @@ const Camp = () => {
 
   return (
     <div className="camp-page page">
-      <div
-        className="camp-banner"
-        style={{ backgroundImage: `url(${bannerImage})` }}
-      >
+      <div className="camp-banner" style={{ backgroundImage: `url(${bannerImage})` }}>
         <div className="banner-content">
           <h1 className="banner-heading">{fullName}</h1>
         </div>
       </div>
+
       <div className="single-camp-overview">
         <div className="overview-container">
           <div className="info-block">
             <div className="text-wrap">
               <h3>{fullName}</h3>
-              <p className="description">{description}</p>
-              <p className="weather-info">{weather}</p>
-              <div className="plan-trip-info">
-                {forecasts.length > 0 && (
-                  <div className="forecast-section">
-                    <div className="forecast">
-                      {forecasts.map((forecast, index) => {
-                        return (
+              <p className="description">{description || "No description available."}</p>
+              <p className="weather-info">{weather || "No weather information available."}</p>
+               <div className="plan-trip-info">
+                <div className="forecast-section">
+                  {isWeatherLoading ? (
+                    <p>Loading weather information...</p>
+                  ) : (
+                    forecasts.length > 0 && (
+                      <div className="forecast">
+                        {forecasts.map((forecast, index) => (
                           <Weather
                             key={index}
                             day={forecast.day}
@@ -118,11 +116,12 @@ const Camp = () => {
                             min={forecast.minTemp}
                             max={forecast.maxTemp}
                           />
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                        ))}
+                      </div>
+                    )
+                  )}
+                </div>
+
                 <div className="get-directions">
                   <div className="content">
                     {cords.length === 2 && (
@@ -152,14 +151,11 @@ const Camp = () => {
             )}
           </div>
         </div>
+
         <div className="amenities-container">
           <div className="image-container">
-            {images && images.length > 0 ? (
-              images[1] ? (
-                <img src={images[1].url} alt={images[1].altText || "Image"} />
-              ) : (
-                <img src={images[0].url} alt={images[0].altText || "Image"} />
-              )
+            {images[1] ? (
+              <img src={images[1].url} alt={images[1].altText || "Image"} />
             ) : (
               <img src={defaultBanner} alt="No Image Available" />
             )}
@@ -171,10 +167,7 @@ const Camp = () => {
               {Object.entries(amenities).map(([key, value]) => (
                 <p key={key}>
                   <strong>
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (str) => str.toUpperCase())}
-                    :
+                    {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}:
                   </strong>{" "}
                   {formatCampValues(value)}
                 </p>
@@ -182,6 +175,7 @@ const Camp = () => {
             </div>
           </div>
         </div>
+
         <div className="campsites-container">
           <div className="campsites-content">
             <h3>Campsites</h3>
@@ -190,10 +184,7 @@ const Camp = () => {
               {Object.entries(campsites).map(([key, value]) => (
                 <p key={key}>
                   <strong>
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (str) => str.toUpperCase())}
-                    :
+                    {key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}:
                   </strong>{" "}
                   {formatCampValues(value)}
                 </p>
@@ -201,17 +192,14 @@ const Camp = () => {
             </div>
           </div>
           <div className="image-container">
-            {images && images.length > 0 ? (
-              images[2] ? (
-                <img src={images[2].url} alt={images[2].altText || "Image"} />
-              ) : (
-                <img src={images[0].url} alt={images[0].altText || "Image"} />
-              )
+            {images[2] ? (
+              <img src={images[2].url} alt={images[2].altText || "Image"} />
             ) : (
               <img src={defaultBanner} alt="No Image Available" />
             )}
           </div>
         </div>
+
         <div className="contact-section">
           <div className="card-container">
             <h3>Contact</h3>
@@ -219,65 +207,70 @@ const Camp = () => {
               <div className="left-block">
                 <div className="email-block">
                   <h4>Email</h4>
-                  {emails.map((email, index) => (
-                    <div key={index} className="email-info">
-                      {email.description && (
-                        <p className="email-description">{email.description}</p>
-                      )}
-                      <p className="email">
-                        <a href={`mailto:${email.emailAddress}`}>
-                          {email.emailAddress}
-                        </a>
-                      </p>
-                    </div>
-                  ))}
+                  {emails.length > 0 ? (
+                    emails.map((email, index) => (
+                      <div key={index} className="email-info">
+                        {email.description && (
+                          <p className="email-description">{email.description}</p>
+                        )}
+                        <p className="email">
+                          <a href={`mailto:${email.emailAddress}`}>
+                            {email.emailAddress}
+                          </a>
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No email contact available.</p>
+                  )}
                 </div>
+
                 <div className="phone-block">
                   <h4>Phone</h4>
-                  {phoneNumbers.map((phone, index) => (
-                    <div key={index} className="phone-info">
-                      <p>
-                        {phone.type}:{" "}
-                        <a href={`tel:${phone.phoneNumber}`}>
-                          {phone.phoneNumber.length === 10
-                            ? `(${phone.phoneNumber.slice(
-                                0,
-                                3
-                              )}) ${phone.phoneNumber.slice(
-                                3,
-                                6
-                              )}-${phone.phoneNumber.slice(6)}`
-                            : phone.phoneNumber}
-                          {phone.extension ? ` ext: ${phone.extension}` : ""}
-                        </a>
-                      </p>
-                    </div>
-                  ))}
+                  {phoneNumbers.length > 0 ? (
+                    phoneNumbers.map((phone, index) => (
+                      <div key={index} className="phone-info">
+                        <p>
+                          {phone.type}:{" "}
+                          <a href={`tel:${phone.phoneNumber}`}>
+                            {phone.phoneNumber.length === 10
+                              ? `(${phone.phoneNumber.slice(0, 3)}) ${phone.phoneNumber.slice(3, 6)}-${phone.phoneNumber.slice(6)}`
+                              : phone.phoneNumber}
+                            {phone.extension ? ` ext: ${phone.extension}` : ""}
+                          </a>
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No phone contact available.</p>
+                  )}
                 </div>
               </div>
               <div className="right-block">
-                {operatingHours.map((camp, index) => (
-                  <div key={index} className="camp-info">
-                    <h4 className="camp-name">{camp.name}</h4>
-                    {camp.description && (
-                      <p className="camp-description">{camp.description}</p>
-                    )}
-                    <div className="operating-hours">
-                      <div className="hours-row">
-                        {Object.entries(camp.standardHours).map(
-                          ([day, hours], dayIndex) => (
-                            <span key={dayIndex} className="hours-day">
-                              <span className="day">{`${
-                                day.charAt(0).toUpperCase() + day.slice(1)
-                              }`}</span>
-                              : {`${hours}`}
-                            </span>
-                          )
-                        )}
+                {operatingHours.length > 0 ? (
+                  operatingHours.map((camp, index) => (
+                    <div key={index} className="camp-info">
+                      <h4 className="camp-name">{camp.name}</h4>
+                      {camp.description && (
+                        <p className="camp-description">{camp.description}</p>
+                      )}
+                      <div className="operating-hours">
+                        <div className="hours-row">
+                          {Object.entries(camp.standardHours).map(
+                            ([day, hours], dayIndex) => (
+                              <span key={dayIndex} className="hours-day">
+                                <span className="day">{`${day.charAt(0).toUpperCase() + day.slice(1)}`}</span>
+                                : {`${hours}`}
+                              </span>
+                            )
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p>No operating hours information available.</p>
+                )}
               </div>
             </div>
           </div>
